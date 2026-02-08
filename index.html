@@ -9,8 +9,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <!-- by Padli Nurramadhan -->
     <style>
         * {
             margin: 0;
@@ -149,6 +150,38 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
+        /* Navigation Tabs */
+        .nav-tabs {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem 0;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav-tab {
+            padding: 0.8rem 1.5rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 12px 12px 0 0;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-tab:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: var(--primary);
+        }
+
         /* Main Container */
         .container {
             max-width: 1400px;
@@ -156,10 +189,10 @@
             padding: 0 2rem;
         }
 
-        /* Stats Cards */
+        /* Stats Cards - Diubah menjadi grid 3 kolom tetap */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
@@ -211,7 +244,6 @@
             animation: iconPulse 2s infinite;
         }
 
-        
         @keyframes iconPulse {
             0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
             50% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); }
@@ -239,6 +271,14 @@
         @media (max-width: 968px) {
             .main-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                flex-wrap: wrap;
             }
         }
 
@@ -410,6 +450,11 @@
 
         .btn-warning {
             background: linear-gradient(135deg, var(--warning), #d97706);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #64748b, #475569);
             color: white;
         }
 
@@ -665,10 +710,6 @@
                 text-align: center;
             }
             
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
             .action-bar {
                 justify-content: center;
             }
@@ -713,6 +754,7 @@
             text-align: center;
             border: 2px solid var(--gray-200);
             transition: all 0.3s;
+            cursor: pointer;
         }
 
         .barcode-item:hover {
@@ -746,6 +788,136 @@
             font-weight: bold;
             color: var(--primary-dark);
         }
+
+        /* Barcode Generator Styles */
+        .generator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 968px) {
+            .generator-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .barcode-preview {
+            background: white;
+            border: 2px dashed var(--gray-200);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .barcode-canvas {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .student-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--gray-100);
+            transition: all 0.2s;
+        }
+
+        .student-item:hover {
+            background: var(--gray-50);
+        }
+
+        .student-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .student-id {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-family: monospace;
+        }
+
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        .format-options {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .format-btn {
+            padding: 0.4rem 0.8rem;
+            border: 2px solid var(--gray-200);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .format-btn:hover, .format-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .tab-content {
+            animation: fadeIn 0.3s ease;
+        }
+
+        .print-area {
+            display: none;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .print-area, .print-area * {
+                visibility: visible;
+            }
+            .print-area {
+                display: block;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -771,163 +943,285 @@
                 <span id="currentDate">Loading...</span>
             </div>
         </div>
+        
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('absensi')" id="tab-absensi">
+                <i class="fas fa-clipboard-check"></i> Absensi
+            </button>
+            <button class="nav-tab" onclick="switchTab('generator')" id="tab-generator">
+                <i class="fas fa-barcode"></i> Generator Barcode
+            </button>
+        </div>
     </header>
 
     <div class="container">
-        <!-- Stats -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-users"></i>
+        <!-- TAB ABSENSI -->
+        <div id="content-absensi" class="tab-content">
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalStudents">0</h3>
+                        <p>Total Siswa Hadir</p>
+                    </div>
                 </div>
-                <div class="stat-info">
-                    <h3 id="totalStudents">0</h3>
-                    <p>Total Siswa Hadir</p>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="lastScan">--:--</h3>
+                        <p>Scan Terakhir</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="currentDay">-</h3>
+                        <p>Hari Ini</p>
+                    </div>
                 </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
-                    <i class="fas fa-clock"></i>
+
+            <!-- Main Grid -->
+            <div class="main-grid">
+                <!-- Scanner Section -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-camera"></i>
+                            Scanner Barcode
+                        </h2>
+                        <button class="btn btn-primary" onclick="toggleScanner()" id="toggleBtn">
+                            <i class="fas fa-power-off"></i> Mulai
+                        </button>
+                    </div>
+                    
+                    <div class="scanner-container" id="scannerContainer" style="display: none;">
+                        <div id="reader"></div>
+                        <div class="scanner-overlay">
+                            <div class="scanner-line"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="scanner-status" id="scannerStatus">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Klik "Mulai" untuk aktifkan scanner</span>
+                    </div>
+
+                    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid var(--gray-100);">
+                        <h4 style="margin-bottom: 1rem; color: var(--primary-dark);">
+                            <i class="fas fa-keyboard"></i> Input Manual
+                        </h4>
+                        <div class="manual-input">
+                            <div class="input-group">
+                                <i class="fas fa-barcode"></i>
+                                <input type="text" id="manualBarcode" placeholder="Masukkan nomor barcode..." 
+                                       onkeypress="if(event.key==='Enter')processManualInput()">
+                            </div>
+                            <button class="btn btn-primary" onclick="processManualInput()">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sample Barcodes -->
+                    <div style="margin-top: 1.5rem;">
+                        <h4 style="margin-bottom: 0.5rem; color: var(--primary-dark); font-size: 0.9rem;">
+                            <i class="fas fa-tags"></i> Contoh Barcode untuk Testing:
+                        </h4>
+                        <div class="barcode-samples">
+                            <div class="barcode-item" onclick="fillManual('RPL1001')">
+                                <div class="barcode-visual"></div>
+                                <div class="barcode-number">RPL1001</div>
+                                <small>Ade Fajriah</small>
+                            </div>
+                            <div class="barcode-item" onclick="fillManual('RPL1002')">
+                                <div class="barcode-visual"></div>
+                                <div class="barcode-number">RPL1002</div>
+                                <small>Aisah</small>
+                            </div>
+                            <div class="barcode-item" onclick="fillManual('RPL1003')">
+                                <div class="barcode-visual"></div>
+                                <div class="barcode-number">RPL1003</div>
+                                <small>Anggun Mega Aini</small>
+                            </div>
+                            <div class="barcode-item" onclick="fillManual('RPL1004')">
+                                <div class="barcode-visual"></div>
+                                <div class="barcode-number">RPL1004</div>
+                                <small>Artika Sari Devi</small>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem; text-align: center;">
+                            Klik barcode di atas untuk auto-fill atau scan dengan kamera
+                        </p>
+                    </div>
                 </div>
-                <div class="stat-info">
-                    <h3 id="lastScan">--:--</h3>
-                    <p>Scan Terakhir</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                    <i class="fas fa-calendar-check"></i>
-                </div>
-                <div class="stat-info">
-                    <h3 id="currentDay">-</h3>
-                    <p>Hari Ini</p>
+
+                <!-- Data Table Section -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-list-alt"></i>
+                            Data Absensi Hari Ini
+                        </h2>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-success" onclick="exportToExcel()">
+                                <i class="fas fa-file-excel"></i> Export Excel
+                            </button>
+                            <button class="btn btn-danger" onclick="clearAllData()">
+                                <i class="fas fa-trash"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="action-bar">
+                        <button class="btn btn-primary" onclick="openModal()">
+                            <i class="fas fa-plus"></i> Tambah Manual
+                        </button>
+                        <button class="btn btn-warning" onclick="loadSampleData()">
+                            <i class="fas fa-database"></i> Data Sample
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="attendanceTable">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Siswa</th>
+                                    <th>Kelas</th>
+                                    <th>Jurusan</th>
+                                    <th>Waktu</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                <tr class="empty-state">
+                                    <td colspan="7">
+                                        <i class="fas fa-inbox"></i>
+                                        <p>Belum ada data absensi</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Main Grid -->
-        <div class="main-grid">
-            <!-- Scanner Section -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <i class="fas fa-camera"></i>
-                        Scanner Barcode
-                    </h2>
-                    <button class="btn btn-primary" onclick="toggleScanner()" id="toggleBtn">
-                        <i class="fas fa-power-off"></i> Mulai
-                    </button>
-                </div>
-                
-                <div class="scanner-container" id="scannerContainer" style="display: none;">
-                    <div id="reader"></div>
-                    <div class="scanner-overlay">
-                        <div class="scanner-line"></div>
-                    </div>
-                </div>
-                
-                <div class="scanner-status" id="scannerStatus">
-                    <i class="fas fa-info-circle"></i>
-                    <span>Klik "Mulai" untuk aktifkan scanner</span>
-                </div>
-
-                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid var(--gray-100);">
-                    <h4 style="margin-bottom: 1rem; color: var(--primary-dark);">
-                        <i class="fas fa-keyboard"></i> Input Manual
-                    </h4>
-                    <div class="manual-input">
-                        <div class="input-group">
+        <!-- TAB GENERATOR BARCODE -->
+        <div id="content-generator" class="tab-content hidden">
+            <div class="generator-grid">
+                <!-- Form Generator -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
                             <i class="fas fa-barcode"></i>
-                            <input type="text" id="manualBarcode" placeholder="Masukkan nomor barcode..." 
-                                   onkeypress="if(event.key==='Enter')processManualInput()">
+                            Generator Barcode
+                        </h2>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nomor Barcode (ID Siswa)</label>
+                        <input type="text" id="genBarcode" placeholder="Contoh: RPL1001" oninput="previewBarcode()">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nama Siswa</label>
+                        <input type="text" id="genName" placeholder="Nama lengkap siswa">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Kelas</label>
+                        <select id="genClass">
+                            <option value="XII">XII</option>
+                            <option value="XI">XI</option>
+                            <option value="X">X</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Jurusan</label>
+                        <input type="text" id="genMajor" value="RPL">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Format Barcode</label>
+                        <div class="format-options">
+                            <button class="format-btn active" onclick="setFormat('CODE128')">CODE128</button>
+                            <button class="format-btn" onclick="setFormat('CODE39')">CODE39</button>
+                            <button class="format-btn" onclick="setFormat('EAN13')">EAN13</button>
+                            <button class="format-btn" onclick="setFormat('UPC')">UPC</button>
                         </div>
-                        <button class="btn btn-primary" onclick="processManualInput()">
-                            <i class="fas fa-check"></i>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <button class="btn btn-primary" onclick="generateBarcode()" style="width: 100%; margin-bottom: 0.5rem;">
+                            <i class="fas fa-sync-alt"></i> Generate Barcode
+                        </button>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-success" onclick="downloadBarcode()" style="flex: 1;">
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                            <button class="btn btn-secondary" onclick="printBarcode()" style="flex: 1;">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bulk-actions">
+                        <button class="btn btn-warning btn-small" onclick="generateAllBarcodes()">
+                            <i class="fas fa-magic"></i> Generate Semua Siswa
+                        </button>
+                        <button class="btn btn-primary btn-small" onclick="downloadAllBarcodes()">
+                            <i class="fas fa-file-archive"></i> Download All
                         </button>
                     </div>
                 </div>
 
-                <!-- Sample Barcodes -->
-                <div style="margin-top: 1.5rem;">
-                    <h4 style="margin-bottom: 0.5rem; color: var(--primary-dark); font-size: 0.9rem;">
-                        <i class="fas fa-tags"></i> Contoh Barcode untuk Testing:
-                    </h4>
-                    <div class="barcode-samples">
-                        <div class="barcode-item" onclick="fillManual('RPL001')">
-                            <div class="barcode-visual"></div>
-                            <div class="barcode-number">RPL1001</div>
-                            <small>Ade Fajriah</small>
+                <!-- Preview & List -->
+                <div>
+                    <!-- Preview -->
+                    <div class="card" style="margin-bottom: 1.5rem;">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-eye"></i>
+                                Preview
+                            </h2>
                         </div>
-                        <div class="barcode-item" onclick="fillManual('RPL002')">
-                            <div class="barcode-visual"></div>
-                            <div class="barcode-number">RPL1002</div>
-                            <small>Aisah</small>
+                        <div class="barcode-preview" id="previewContainer">
+                            <i class="fas fa-barcode" style="font-size: 4rem; color: var(--gray-200);"></i>
+                            <p style="color: #94a3b8; margin-top: 1rem;">Masukkan data untuk generate barcode</p>
                         </div>
-                        <div class="barcode-item" onclick="fillManual('RPL003')">
-                            <div class="barcode-visual"></div>
-                            <div class="barcode-number">RPL1003</div>
-                            <small>Anggun Mega Aini</small>
+                        <canvas id="barcodeCanvas" style="display: none;"></canvas>
+                    </div>
+
+                    <!-- Generated List -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-list"></i>
+                                Barcode Generated (<span id="generatedCount">0</span>)
+                            </h2>
+                            <button class="btn btn-danger btn-small" onclick="clearGenerated()">
+                                <i class="fas fa-trash"></i> Clear
+                            </button>
                         </div>
-                        <div class="barcode-item" onclick="fillManual('RPL004')">
-                            <div class="barcode-visual"></div>
-                            <div class="barcode-number">RPL1004</div>
-                            <small>Artika Sari Devi</small>
+                        <div class="student-list" id="generatedList">
+                            <div class="empty-state" style="padding: 2rem;">
+                                <i class="fas fa-inbox"></i>
+                                <p>Belum ada barcode yang digenerate</p>
+                            </div>
                         </div>
                     </div>
-                    <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem; text-align: center;">
-                        Klik barcode di atas untuk auto-fill atau scan dengan kamera
-                    </p>
-                </div>
-            </div>
-
-            <!-- Data Table Section -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <i class="fas fa-list-alt"></i>
-                        Data Absensi Hari Ini
-                    </h2>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button class="btn btn-success" onclick="exportToExcel()">
-                            <i class="fas fa-file-excel"></i> Export Excel
-                        </button>
-                        <button class="btn btn-danger" onclick="clearAllData()">
-                            <i class="fas fa-trash"></i> Reset
-                        </button>
-                    </div>
-                </div>
-
-                <div class="action-bar">
-                    <button class="btn btn-primary" onclick="openModal()">
-                        <i class="fas fa-plus"></i> Tambah Manual
-                    </button>
-                    <button class="btn btn-warning" onclick="loadSampleData()">
-                        <i class="fas fa-database"></i> Data Sample
-                    </button>
-                </div>
-
-                <div class="table-container">
-                    <table id="attendanceTable">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Siswa</th>
-                                <th>Kelas</th>
-                                <th>Jurusan</th>
-                                <th>Waktu</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody">
-                            <tr class="empty-state">
-                                <td colspan="7">
-                                    <i class="fas fa-inbox"></i>
-                                    <p>Belum ada data absensi</p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
@@ -972,6 +1266,9 @@
         </div>
     </div>
 
+    <!-- Print Area -->
+    <div class="print-area" id="printArea"></div>
+
     <script>
         // Database Setup (IndexedDB)
         let db;
@@ -980,55 +1277,57 @@
         let html5QrCode;
         let isScanning = false;
         let currentDate = new Date();
+        let currentFormat = 'CODE128';
+        let generatedBarcodes = [];
 
         // Sample Data Siswa (Simulasi Database Siswa)
         const studentDatabase = {
             // XII RPL 1
-'RPL1001': { name: 'Ade Pajriah', class: 'XII', major: 'RPL' },
-'RPL1002': { name: 'Aisah', class: 'XII', major: 'RPL' },
-'RPL1003': { name: 'Anggun Mega Aini', class: 'XII', major: 'RPL' },
-'RPL1004': { name: 'Artika Sari Devi', class: 'XII', major: 'RPL' },
-'RPL1005': { name: 'Atikah', class: 'XII', major: 'RPL' },
-'RPL1006': { name: 'Azizah Kamizah', class: 'XII', major: 'RPL' },
-'RPL1007': { name: 'Indri Nuriska', class: 'XII', major: 'RPL' },
-'RPL1008': { name: 'Kaila Pratiwi', class: 'XII', major: 'RPL' },
-'RPL1009': { name: 'Kania Putri Dewi', class: 'XII', major: 'RPL' },
-'RPL1010': { name: 'Nopi Yanti', class: 'XII', major: 'RPL' },
-'RPL1011': { name: 'Nurul Sa’adah', class: 'XII', major: 'RPL' },
-'RPL1012': { name: 'Ovi Nurmaniyah', class: 'XII', major: 'RPL' },
-'RPL1013': { name: 'Putri Damayanti', class: 'XII', major: 'RPL' },
-'RPL1014': { name: 'Rani Anggraeni', class: 'XII', major: 'RPL' },
-'RPL1015': { name: 'Selli Repina', class: 'XII', major: 'RPL' },
-'RPL1016': { name: 'Siti Aminah', class: 'XII', major: 'RPL' },
-'RPL1017': { name: 'Syafa Aqilah', class: 'XII', major: 'RPL' },
+            'RPL1001': { name: 'Ade Pajriah', class: 'XII', major: 'RPL' },
+            'RPL1002': { name: 'Aisah', class: 'XII', major: 'RPL' },
+            'RPL1003': { name: 'Anggun Mega Aini', class: 'XII', major: 'RPL' },
+            'RPL1004': { name: 'Artika Sari Devi', class: 'XII', major: 'RPL' },
+            'RPL1005': { name: 'Atikah', class: 'XII', major: 'RPL' },
+            'RPL1006': { name: 'Azizah Kamizah', class: 'XII', major: 'RPL' },
+            'RPL1007': { name: 'Indri Nuriska', class: 'XII', major: 'RPL' },
+            'RPL1008': { name: 'Kaila Pratiwi', class: 'XII', major: 'RPL' },
+            'RPL1009': { name: 'Kania Putri Dewi', class: 'XII', major: 'RPL' },
+            'RPL1010': { name: 'Nopi Yanti', class: 'XII', major: 'RPL' },
+            'RPL1011': { name: 'Nurul Sa\'adah', class: 'XII', major: 'RPL' },
+            'RPL1012': { name: 'Ovi Nurmaniyah', class: 'XII', major: 'RPL' },
+            'RPL1013': { name: 'Putri Damayanti', class: 'XII', major: 'RPL' },
+            'RPL1014': { name: 'Rani Anggraeni', class: 'XII', major: 'RPL' },
+            'RPL1015': { name: 'Selli Repina', class: 'XII', major: 'RPL' },
+            'RPL1016': { name: 'Siti Aminah', class: 'XII', major: 'RPL' },
+            'RPL1017': { name: 'Syafa Aqilah', class: 'XII', major: 'RPL' },
 
-// XII RPL 2
-'RPL2001': { name: 'Ade Amelia Rizkiyah', class: 'XII', major: 'RPL' },
-'RPL2002': { name: 'Badrussalam', class: 'XII', major: 'RPL' },
-'RPL2003': { name: 'Chelsi Kirani', class: 'XII', major: 'RPL' },
-'RPL2004': { name: 'Eka Maulana Utomo', class: 'XII', major: 'RPL' },
-'RPL2005': { name: 'Imbron Rosadi', class: 'XII', major: 'RPL' },
-'RPL2006': { name: 'Irnasih', class: 'XII', major: 'RPL' },
-'RPL2007': { name: 'Jeje Latipah', class: 'XII', major: 'RPL' },
-'RPL2008': { name: 'Meli', class: 'XII', major: 'RPL' },
-'RPL2009': { name: 'Muhamad Jalil', class: 'XII', major: 'RPL' },
-'RPL2010': { name: 'Neman Maian', class: 'XII', major: 'RPL' },
-'RPL2011': { name: 'Neng Sari', class: 'XII', major: 'RPL' },
-'RPL2012': { name: 'Nurjaya', class: 'XII', major: 'RPL' },
-'RPL2013': { name: 'Padli Nurramadhan', class: 'XII', major: 'RPL' },
-'RPL2014': { name: 'Fazri Ramdani', class: 'XII', major: 'RPL' },
-'RPL2015': { name: 'Putri Cahyati', class: 'XII', major: 'RPL' },
-'RPL2016': { name: 'Rizky Febrian', class: 'XII', major: 'RPL' },
-'RPL2017': { name: 'Suci Siti Aisyah', class: 'XII', major: 'RPL' },
-'RPL2018': { name: 'Sutomo Azis', class: 'XII', major: 'RPL' },
-'RPL2019': { name: 'Tarsyidik', class: 'XII', major: 'RPL' },
-'RPL2020': { name: 'Widia', class: 'XII', major: 'RPL' },
-'RPL2021': { name: 'Muhamad Zulfikar', class: 'XII', major: 'RPL' },
-'RPL2022': { name: 'Eka Ramdani', class: 'XII', major: 'RPL' },
-'RPL2023': { name: 'Anida Khoirunisa', class: 'XII', major: 'RPL' },
-'RPL2024': { name: 'Muhamad Jujun Junaedi', class: 'XII', major: 'RPL' },
-'RPL2025': { name: 'Amelia', class: 'XII', major: 'RPL' },
-'RPL2026': { name: 'Permana Kusuma', class: 'XII', major: 'RPL' },
+            // XII RPL 2
+            'RPL2001': { name: 'Ade Amelia Rizkiyah', class: 'XII', major: 'RPL' },
+            'RPL2002': { name: 'Badrussalam', class: 'XII', major: 'RPL' },
+            'RPL2003': { name: 'Chelsi Kirani', class: 'XII', major: 'RPL' },
+            'RPL2004': { name: 'Eka Maulana Utomo', class: 'XII', major: 'RPL' },
+            'RPL2005': { name: 'Imbron Rosadi', class: 'XII', major: 'RPL' },
+            'RPL2006': { name: 'Irnasih', class: 'XII', major: 'RPL' },
+            'RPL2007': { name: 'Jeje Latipah', class: 'XII', major: 'RPL' },
+            'RPL2008': { name: 'Meli', class: 'XII', major: 'RPL' },
+            'RPL2009': { name: 'Muhamad Jalil', class: 'XII', major: 'RPL' },
+            'RPL2010': { name: 'Neman Maian', class: 'XII', major: 'RPL' },
+            'RPL2011': { name: 'Neng Sari', class: 'XII', major: 'RPL' },
+            'RPL2012': { name: 'Nurjaya', class: 'XII', major: 'RPL' },
+            'RPL2013': { name: 'Padli Nurramadhan', class: 'XII', major: 'RPL' },
+            'RPL2014': { name: 'Fazri Ramdani', class: 'XII', major: 'RPL' },
+            'RPL2015': { name: 'Putri Cahyati', class: 'XII', major: 'RPL' },
+            'RPL2016': { name: 'Rizky Febrian', class: 'XII', major: 'RPL' },
+            'RPL2017': { name: 'Suci Siti Aisyah', class: 'XII', major: 'RPL' },
+            'RPL2018': { name: 'Sutomo Azis', class: 'XII', major: 'RPL' },
+            'RPL2019': { name: 'Tarsyidik', class: 'XII', major: 'RPL' },
+            'RPL2020': { name: 'Widia', class: 'XII', major: 'RPL' },
+            'RPL2021': { name: 'Muhamad Zulfikar', class: 'XII', major: 'RPL' },
+            'RPL2022': { name: 'Eka Ramdani', class: 'XII', major: 'RPL' },
+            'RPL2023': { name: 'Anida Khoirunisa', class: 'XII', major: 'RPL' },
+            'RPL2024': { name: 'Muhamad Jujun Junaedi', class: 'XII', major: 'RPL' },
+            'RPL2025': { name: 'Amelia', class: 'XII', major: 'RPL' },
+            'RPL2026': { name: 'Permana Kusuma', class: 'XII', major: 'RPL' },
         };
 
         // Initialize
@@ -1048,6 +1347,26 @@
                 }
             }, 60000);
         });
+
+        // Tab Switching
+        function switchTab(tabName) {
+            // Update nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById('tab-' + tabName).classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById('content-' + tabName).classList.remove('hidden');
+            
+            // Stop scanner if leaving absensi tab
+            if (tabName !== 'absensi' && isScanning) {
+                stopScanner();
+            }
+        }
 
         // Initialize IndexedDB
         function initDB() {
@@ -1497,7 +1816,284 @@
                 closeModal();
             }
         }
+
+        // ==================== BARCODE GENERATOR FUNCTIONS ====================
+
+        function setFormat(format) {
+            currentFormat = format;
+            document.querySelectorAll('.format-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            previewBarcode();
+        }
+
+        function previewBarcode() {
+            const barcode = document.getElementById('genBarcode').value;
+            const name = document.getElementById('genName').value;
+            
+            if (!barcode) {
+                document.getElementById('previewContainer').innerHTML = `
+                    <i class="fas fa-barcode" style="font-size: 4rem; color: var(--gray-200);"></i>
+                    <p style="color: #94a3b8; margin-top: 1rem;">Masukkan data untuk generate barcode</p>
+                `;
+                return;
+            }
+            
+            try {
+                const canvas = document.createElement('canvas');
+                JsBarcode(canvas, barcode, {
+                    format: currentFormat,
+                    width: 2,
+                    height: 80,
+                    displayValue: true,
+                    fontSize: 16,
+                    font: 'monospace',
+                    margin: 10
+                });
+                
+                const previewContainer = document.getElementById('previewContainer');
+                previewContainer.innerHTML = '';
+                
+                const wrapper = document.createElement('div');
+                wrapper.className = 'barcode-canvas';
+                wrapper.appendChild(canvas);
+                
+                if (name) {
+                    const nameLabel = document.createElement('div');
+                    nameLabel.style.marginTop = '10px';
+                    nameLabel.style.fontWeight = 'bold';
+                    nameLabel.style.color = 'var(--primary-dark)';
+                    nameLabel.textContent = name;
+                    wrapper.appendChild(nameLabel);
+                }
+                
+                previewContainer.appendChild(wrapper);
+            } catch (e) {
+                console.error('Barcode generation error:', e);
+            }
+        }
+
+        function generateBarcode() {
+            const barcode = document.getElementById('genBarcode').value;
+            const name = document.getElementById('genName').value;
+            const studentClass = document.getElementById('genClass').value;
+            const major = document.getElementById('genMajor').value;
+            
+            if (!barcode) {
+                showToast('Masukkan nomor barcode!', 'error');
+                return;
+            }
+            
+            // Add to generated list
+            const generatedData = {
+                barcode: barcode,
+                name: name || 'Unknown',
+                class: studentClass,
+                major: major,
+                timestamp: new Date().getTime()
+            };
+            
+            // Check if already exists
+            const existing = generatedBarcodes.find(item => item.barcode === barcode);
+            if (existing) {
+                showToast('Barcode sudah ada dalam daftar!', 'warning');
+                return;
+            }
+            
+            generatedBarcodes.push(generatedData);
+            updateGeneratedList();
+            showToast('Barcode berhasil digenerate!', 'success');
+            
+            // Clear inputs
+            document.getElementById('genBarcode').value = '';
+            document.getElementById('genName').value = '';
+            previewBarcode();
+        }
+
+        function updateGeneratedList() {
+            const listContainer = document.getElementById('generatedList');
+            const countSpan = document.getElementById('generatedCount');
+            
+            countSpan.textContent = generatedBarcodes.length;
+            
+            if (generatedBarcodes.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="empty-state" style="padding: 2rem;">
+                        <i class="fas fa-inbox"></i>
+                        <p>Belum ada barcode yang digenerate</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            listContainer.innerHTML = generatedBarcodes.map((item, index) => `
+                <div class="student-item">
+                    <div class="student-info">
+                        <span class="student-name">${item.name}</span>
+                        <span class="student-id">${item.barcode} • ${item.class} ${item.major}</span>
+                    </div>
+                    <div style="display: flex; gap: 0.3rem;">
+                        <button class="btn btn-primary btn-small" onclick="downloadSingleBarcode(${index})">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="removeGenerated(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function removeGenerated(index) {
+            generatedBarcodes.splice(index, 1);
+            updateGeneratedList();
+            showToast('Barcode dihapus dari daftar', 'success');
+        }
+
+        function clearGenerated() {
+            if (generatedBarcodes.length === 0) return;
+            if (confirm('Hapus semua barcode yang sudah digenerate?')) {
+                generatedBarcodes = [];
+                updateGeneratedList();
+                showToast('Daftar barcode dikosongkan', 'success');
+            }
+        }
+
+        function downloadBarcode() {
+            const barcode = document.getElementById('genBarcode').value || 'barcode';
+            const canvas = document.querySelector('#previewContainer canvas');
+            
+            if (!canvas) {
+                showToast('Generate barcode terlebih dahulu!', 'error');
+                return;
+            }
+            
+            const link = document.createElement('a');
+            link.download = `barcode_${barcode}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+            
+            showToast('Barcode berhasil diunduh!', 'success');
+        }
+
+        function downloadSingleBarcode(index) {
+            const item = generatedBarcodes[index];
+            const canvas = document.createElement('canvas');
+            
+            JsBarcode(canvas, item.barcode, {
+                format: currentFormat,
+                width: 2,
+                height: 80,
+                displayValue: true,
+                fontSize: 16,
+                font: 'monospace',
+                margin: 10
+            });
+            
+            const link = document.createElement('a');
+            link.download = `barcode_${item.barcode}_${item.name.replace(/\s+/g, '_')}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+            
+            showToast(`Barcode ${item.barcode} diunduh!`, 'success');
+        }
+
+        function printBarcode() {
+            const canvas = document.querySelector('#previewContainer canvas');
+            if (!canvas) {
+                showToast('Generate barcode terlebih dahulu!', 'error');
+                return;
+            }
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Print Barcode</title>
+                    <style>
+                        body { 
+                            display: flex; 
+                            justify-content: center; 
+                            align-items: center; 
+                            height: 100vh; 
+                            margin: 0;
+                            font-family: Arial, sans-serif;
+                        }
+                        .container { text-align: center; }
+                        img { max-width: 100%; height: auto; }
+                        .name { 
+                            margin-top: 10px; 
+                            font-size: 18px; 
+                            font-weight: bold;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <img src="${canvas.toDataURL()}" />
+                        <div class="name">${document.getElementById('genName').value || ''}</div>
+                    </div>
+                    <script>
+                        window.onload = function() { window.print(); }
+                    <\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        function generateAllBarcodes() {
+            const allStudents = Object.entries(studentDatabase);
+            let count = 0;
+            
+            allStudents.forEach(([barcode, data]) => {
+                const exists = generatedBarcodes.find(item => item.barcode === barcode);
+                if (!exists) {
+                    generatedBarcodes.push({
+                        barcode: barcode,
+                        name: data.name,
+                        class: data.class,
+                        major: data.major,
+                        timestamp: new Date().getTime()
+                    });
+                    count++;
+                }
+            });
+            
+            updateGeneratedList();
+            showToast(`${count} barcode berhasil digenerate!`, 'success');
+        }
+
+        function downloadAllBarcodes() {
+            if (generatedBarcodes.length === 0) {
+                showToast('Tidak ada barcode untuk diunduh!', 'error');
+                return;
+            }
+            
+            // Create a ZIP-like experience by downloading one by one with delay
+            showToast(`Mengunduh ${generatedBarcodes.length} barcode...`, 'success');
+            
+            generatedBarcodes.forEach((item, index) => {
+                setTimeout(() => {
+                    const canvas = document.createElement('canvas');
+                    JsBarcode(canvas, item.barcode, {
+                        format: currentFormat,
+                        width: 2,
+                        height: 80,
+                        displayValue: true,
+                        fontSize: 16,
+                        font: 'monospace',
+                        margin: 10
+                    });
+                    
+                    const link = document.createElement('a');
+                    link.download = `barcode_${item.barcode}_${item.name.replace(/\s+/g, '_')}.png`;
+                    link.href = canvas.toDataURL();
+                    link.click();
+                }, index * 200);
+            });
+        }
     </script>
 </body>
 </html>
-
