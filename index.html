@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi Hadir Siswa 12 RPL</title>
+    
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --primary-dark: #1e3a8a;
+            --secondary: #60a5fa;
+            --accent: #93c5fd;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-700: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #dbeafe 100%);
+            min-height: 100vh;
+            color: var(--gray-700);
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(-10%, -10%) rotate(0deg); }
+            50% { transform: translate(10%, 10%) rotate(180deg); }
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 10px 40px rgba(30, 64, 175, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .title-section h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .title-section p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .date-display {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(30, 64, 175, 0.15);
+        }
+
+        .stat-card:hover::before {
+            width: 100%;
+            opacity: 0.05;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--white);
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            animation: iconPulse 2s infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+            50% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); }
+        }
+
+        .stat-info h3 {
+            font-size: 2rem;
+            color: var(--primary-dark);
+            margin-bottom: 0.2rem;
+        }
+
+        .stat-info p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        /* Main Content Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 968px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Scanner Section */
+        .scanner-container {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--gray-50), var(--gray-100));
+            border: 3px dashed var(--primary-light);
+        }
+
+        #reader {
+            width: 100% !important;
+            border: none !important;
+        }
+
+        #reader video {
+            border-radius: 17px;
+        }
+
+        .scanner-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border: 3px solid var(--primary);
+            border-radius: 20px;
+            pointer-events: none;
+            box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+        }
+
+        .scanner-line {
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background: var(--primary);
+            top: 0;
+            animation: scan 2s linear infinite;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        .scanner-status {
+            text-align: center;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .scanner-status.scanning {
+            animation: statusPulse 1.5s infinite;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { background: var(--primary); }
+            50% { background: var(--success); }
+        }
+
+        /* Manual Input */
+        .manual-input {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .input-group {
+            flex: 1;
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-700);
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 15px rgba(30, 64, 175, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 64, 175, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #d97706);
+            color: white;
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid var(--gray-200);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        tbody tr {
+            transition: all 0.2s ease;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        tbody tr:hover {
+            background: var(--gray-50);
+            transform: scale(1.01);
+        }
+
+        tbody tr:nth-child(even) {
+            background: var(--gray-50);
+        }
+
+        .badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-time {
+            background: #dbeafe;
+            color: var(--primary-dark);
+            font-family: monospace;
+        }
+
+        /* Action Buttons */
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 500px;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .toast {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            min-width: 300px;
+            animation: slideInRight 0.3s ease;
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .toast.warning {
+            border-left-color: var(--warning);
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+        }
+
+        .toast.success .toast-icon { color: var(--success); }
+        .toast.error .toast-icon { color: var(--danger); }
+        .toast.warning .toast-icon { color: var(--warning); }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #94a3b8;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Delete Button in Table */
+        .btn-delete {
+            background: transparent;
+            color: var(--danger);
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-delete:hover {
+            background: #fee2e2;
+            transform: scale(1.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-bar {
+                justify-content: center;
+            }
+        }
+
+        /* Success Animation */
+        .success-check {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            animation: scaleIn 0.3s ease;
+        }
+
+        .success-check i {
+            color: white;
+            font-size: 2.5rem;
+        }
+
+        @keyframes scaleIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* Barcode Sample Display */
+        .barcode-samples {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .barcode-item {
+            background: var(--gray-50);
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid var(--gray-200);
+            transition: all 0.3s;
+        }
+
+        .barcode-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .barcode-visual {
+            height: 60px;
+            background: repeating-linear-gradient(
+                90deg,
+                #000 0px,
+                #000 2px,
+                #fff 2px,
+                #fff 4px,
+                #000 4px,
+                #000 6px,
+                #fff 6px,
+                #fff 8px,
+                #000 8px,
+                #000 10px,
+                #fff 10px,
+                #fff 12px
+            );
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+        }
+
+        .barcode-number {
+            font-family: monospace;
+            font-weight: bold;
+            color: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+                <div class="title-section">
+                    <h1>Absensi Hadir Siswa 12 RPL</h1>
+                    <p>Sistem Absensi Digital Berbasis Barcode</p>
+                </div>
+            </div>
+            <div class="date-display">
+                <i class="fas fa-calendar-alt"></i>
+                <span id="currentDate">Loading...</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="totalStudents">0</h3>
+                    <p>Total Siswa Hadir</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="lastScan">--:--</h3>
+                    <p>Scan Terakhir</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="currentDay">-</h3>
+                    <p>Hari Ini</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Scanner Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-camera"></i>
+                        Scanner Barcode
+                    </h2>
+                    <button class="btn btn-primary" onclick="toggleScanner()" id="toggleBtn">
+                        <i class="fas fa-power-off"></i> Mulai
+                    </button>
+                </div>
+                
+                <div class="scanner-container" id="scannerContainer" style="display: none;">
+                    <div id="reader"></div>
+                    <div class="scanner-overlay">
+                        <div class="scanner-line"></div>
+                    </div>
+                </div>
+                
+                <div class="scanner-status" id="scannerStatus">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Klik "Mulai" untuk aktifkan scanner</span>
+                </div>
+
+                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid var(--gray-100);">
+                    <h4 style="margin-bottom: 1rem; color: var(--primary-dark);">
+                        <i class="fas fa-keyboard"></i> Input Manual
+                    </h4>
+                    <div class="manual-input">
+                        <div class="input-group">
+                            <i class="fas fa-barcode"></i>
+                            <input type="text" id="manualBarcode" placeholder="Masukkan nomor barcode..." 
+                                   onkeypress="if(event.key==='Enter')processManualInput()">
+                        </div>
+                        <button class="btn btn-primary" onclick="processManualInput()">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sample Barcodes -->
+                <div style="margin-top: 1.5rem;">
+                    <h4 style="margin-bottom: 0.5rem; color: var(--primary-dark); font-size: 0.9rem;">
+                        <i class="fas fa-tags"></i> Contoh Barcode untuk Testing:
+                    </h4>
+                    <div class="barcode-samples">
+                        <div class="barcode-item" onclick="fillManual('RPL001')">
+                            <div class="barcode-visual"></div>
+                            <div class="barcode-number">RPL1001</div>
+                            <small>Ade Fajriah</small>
+                        </div>
+                        <div class="barcode-item" onclick="fillManual('RPL002')">
+                            <div class="barcode-visual"></div>
+                            <div class="barcode-number">RPL1002</div>
+                            <small>Aisah</small>
+                        </div>
+                        <div class="barcode-item" onclick="fillManual('RPL003')">
+                            <div class="barcode-visual"></div>
+                            <div class="barcode-number">RPL1003</div>
+                            <small>Anggun Mega Aini</small>
+                        </div>
+                        <div class="barcode-item" onclick="fillManual('RPL004')">
+                            <div class="barcode-visual"></div>
+                            <div class="barcode-number">RPL1004</div>
+                            <small>Artika Sari Devi</small>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem; text-align: center;">
+                        Klik barcode di atas untuk auto-fill atau scan dengan kamera
+                    </p>
+                </div>
+            </div>
+
+            <!-- Data Table Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-list-alt"></i>
+                        Data Absensi Hari Ini
+                    </h2>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-success" onclick="exportToExcel()">
+                            <i class="fas fa-file-excel"></i> Export Excel
+                        </button>
+                        <button class="btn btn-danger" onclick="clearAllData()">
+                            <i class="fas fa-trash"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <button class="btn btn-primary" onclick="openModal()">
+                        <i class="fas fa-plus"></i> Tambah Manual
+                    </button>
+                    <button class="btn btn-warning" onclick="loadSampleData()">
+                        <i class="fas fa-database"></i> Data Sample
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table id="attendanceTable">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Siswa</th>
+                                <th>Kelas</th>
+                                <th>Jurusan</th>
+                                <th>Waktu</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr class="empty-state">
+                                <td colspan="7">
+                                    <i class="fas fa-inbox"></i>
+                                    <p>Belum ada data absensi</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Tambah Manual -->
+    <div class="modal" id="addModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> Tambah Absensi Manual</h2>
+            </div>
+            <form id="addForm" onsubmit="saveManualEntry(event)">
+                <div class="form-group">
+                    <label>Nomor Barcode</label>
+                    <input type="text" id="modalBarcode" required placeholder="Contoh: RPL005">
+                </div>
+                <div class="form-group">
+                    <label>Nama Siswa</label>
+                    <input type="text" id="modalName" required placeholder="Nama lengkap siswa">
+                </div>
+                <div class="form-group">
+                    <label>Kelas</label>
+                    <select id="modalClass" required>
+                        <option value="XII">XII</option>
+                        <option value="XI">XI</option>
+                        <option value="X">X</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Jurusan</label>
+                    <input type="text" id="modalMajor" value="RPL" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" onclick="closeModal()" style="background: var(--gray-200); color: var(--gray-700);">
+                        Batal
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Database Setup (IndexedDB)
+        let db;
+        const DB_NAME = 'AbsensiDB';
+        const DB_VERSION = 1;
+        let html5QrCode;
+        let isScanning = false;
+        let currentDate = new Date();
+
+        // Sample Data Siswa (Simulasi Database Siswa)
+        const studentDatabase = {
+            // XII RPL 1
+'RPL1001': { name: 'Ade Pajriah', class: 'XII', major: 'RPL' },
+'RPL1002': { name: 'Aisah', class: 'XII', major: 'RPL' },
+'RPL1003': { name: 'Anggun Mega Aini', class: 'XII', major: 'RPL' },
+'RPL1004': { name: 'Artika Sari Devi', class: 'XII', major: 'RPL' },
+'RPL1005': { name: 'Atikah', class: 'XII', major: 'RPL' },
+'RPL1006': { name: 'Azizah Kamizah', class: 'XII', major: 'RPL' },
+'RPL1007': { name: 'Indri Nuriska', class: 'XII', major: 'RPL' },
+'RPL1008': { name: 'Kaila Pratiwi', class: 'XII', major: 'RPL' },
+'RPL1009': { name: 'Kania Putri Dewi', class: 'XII', major: 'RPL' },
+'RPL1010': { name: 'Nopi Yanti', class: 'XII', major: 'RPL' },
+'RPL1011': { name: 'Nurul Sa’adah', class: 'XII', major: 'RPL' },
+'RPL1012': { name: 'Ovi Nurmaniyah', class: 'XII', major: 'RPL' },
+'RPL1013': { name: 'Putri Damayanti', class: 'XII', major: 'RPL' },
+'RPL1014': { name: 'Rani Anggraeni', class: 'XII', major: 'RPL' },
+'RPL1015': { name: 'Selli Repina', class: 'XII', major: 'RPL' },
+'RPL1016': { name: 'Siti Aminah', class: 'XII', major: 'RPL' },
+'RPL1017': { name: 'Syafa Aqilah', class: 'XII', major: 'RPL' },
+
+// XII RPL 2
+'RPL2001': { name: 'Ade Amelia Rizkiyah', class: 'XII', major: 'RPL' },
+'RPL2002': { name: 'Badrussalam', class: 'XII', major: 'RPL' },
+'RPL2003': { name: 'Chelsi Kirani', class: 'XII', major: 'RPL' },
+'RPL2004': { name: 'Eka Maulana Utomo', class: 'XII', major: 'RPL' },
+'RPL2005': { name: 'Imbron Rosadi', class: 'XII', major: 'RPL' },
+'RPL2006': { name: 'Irnasih', class: 'XII', major: 'RPL' },
+'RPL2007': { name: 'Jeje Latipah', class: 'XII', major: 'RPL' },
+'RPL2008': { name: 'Meli', class: 'XII', major: 'RPL' },
+'RPL2009': { name: 'Muhamad Jalil', class: 'XII', major: 'RPL' },
+'RPL2010': { name: 'Neman Maian', class: 'XII', major: 'RPL' },
+'RPL2011': { name: 'Neng Sari', class: 'XII', major: 'RPL' },
+'RPL2012': { name: 'Nurjaya', class: 'XII', major: 'RPL' },
+'RPL2013': { name: 'Padli Nurramadhan', class: 'XII', major: 'RPL' },
+'RPL2014': { name: 'Fazri Ramdani', class: 'XII', major: 'RPL' },
+'RPL2015': { name: 'Putri Cahyati', class: 'XII', major: 'RPL' },
+'RPL2016': { name: 'Rizky Febrian', class: 'XII', major: 'RPL' },
+'RPL2017': { name: 'Suci Siti Aisyah', class: 'XII', major: 'RPL' },
+'RPL2018': { name: 'Sutomo Azis', class: 'XII', major: 'RPL' },
+'RPL2019': { name: 'Tarsyidik', class: 'XII', major: 'RPL' },
+'RPL2020': { name: 'Widia', class: 'XII', major: 'RPL' },
+'RPL2021': { name: 'Muhamad Zulfikar', class: 'XII', major: 'RPL' },
+'RPL2022': { name: 'Eka Ramdani', class: 'XII', major: 'RPL' },
+'RPL2023': { name: 'Anida Khoirunisa', class: 'XII', major: 'RPL' },
+'RPL2024': { name: 'Muhamad Jujun Junaedi', class: 'XII', major: 'RPL' },
+'RPL2025': { name: 'Amelia', class: 'XII', major: 'RPL' },
+'RPL2026': { name: 'Permana Kusuma', class: 'XII', major: 'RPL' },
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initDB();
+            updateDateDisplay();
+            loadTodayData();
+            
+            // Update date every minute to check for day change
+            setInterval(() => {
+                const now = new Date();
+                if (now.getDate() !== currentDate.getDate()) {
+                    currentDate = now;
+                    updateDateDisplay();
+                    loadTodayData();
+                    showToast('Hari baru! Data absensi direset untuk tanggal baru.', 'warning');
+                }
+            }, 60000);
+        });
+
+        // Initialize IndexedDB
+        function initDB() {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            
+            request.onerror = () => showToast('Error membuka database', 'error');
+            
+            request.onsuccess = (event) => {
+                db = event.target.result;
+                console.log('Database berhasil dibuka');
+            };
+            
+            request.onupgradeneeded = (event) => {
+                db = event.target.result;
+                if (!db.objectStoreNames.contains('attendance')) {
+                    const store = db.createObjectStore('attendance', { keyPath: 'id', autoIncrement: true });
+                    store.createIndex('date', 'date', { unique: false });
+                    store.createIndex('barcode', 'barcode', { unique: false });
+                }
+            };
+        }
+
+        // Update Date Display
+        function updateDateDisplay() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = currentDate.toLocaleDateString('id-ID', options);
+            document.getElementById('currentDate').textContent = dateStr;
+            document.getElementById('currentDay').textContent = currentDate.toLocaleDateString('id-ID', { weekday: 'long' });
+        }
+
+        // Get Today's Date String
+        function getTodayString() {
+            return currentDate.toISOString().split('T')[0];
+        }
+
+        // Toggle Scanner
+        function toggleScanner() {
+            if (isScanning) {
+                stopScanner();
+            } else {
+                startScanner();
+            }
+        }
+
+        // Start Scanner
+        function startScanner() {
+            const container = document.getElementById('scannerContainer');
+            const status = document.getElementById('scannerStatus');
+            const btn = document.getElementById('toggleBtn');
+            
+            container.style.display = 'block';
+            status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memulai kamera...';
+            status.classList.add('scanning');
+            
+            html5QrCode = new Html5Qrcode("reader");
+            
+            html5QrCode.start(
+                { facingMode: "environment" },
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                },
+                onScanSuccess,
+                onScanFailure
+            ).then(() => {
+                isScanning = true;
+                btn.innerHTML = '<i class="fas fa-stop"></i> Berhenti';
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-danger');
+                status.innerHTML = '<i class="fas fa-camera"></i> Scanner aktif - Arahkan barcode ke kamera';
+            }).catch(err => {
+                status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error: ' + err;
+                status.classList.remove('scanning');
+                container.style.display = 'none';
+                showToast('Gagal mengakses kamera: ' + err, 'error');
+            });
+        }
+
+        // Stop Scanner
+        function stopScanner() {
+            if (html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    isScanning = false;
+                    document.getElementById('scannerContainer').style.display = 'none';
+                    document.getElementById('scannerStatus').innerHTML = '<i class="fas fa-info-circle"></i> Scanner dihentikan';
+                    document.getElementById('scannerStatus').classList.remove('scanning');
+                    
+                    const btn = document.getElementById('toggleBtn');
+                    btn.innerHTML = '<i class="fas fa-power-off"></i> Mulai';
+                    btn.classList.remove('btn-danger');
+                    btn.classList.add('btn-primary');
+                });
+            }
+        }
+
+        // Scan Success
+        function onScanSuccess(decodedText, decodedResult) {
+            processBarcode(decodedText);
+        }
+
+        function onScanFailure(error) {
+            // console.warn(`Code scan error = ${error}`);
+        }
+
+        // Process Barcode
+        function processBarcode(barcode) {
+            // Check if already scanned today
+            const transaction = db.transaction(['attendance'], 'readonly');
+            const store = transaction.objectStore('attendance');
+            const index = store.index('date');
+            const request = index.getAll(getTodayString());
+            
+            request.onsuccess = () => {
+                const todayData = request.result;
+                const existing = todayData.find(item => item.barcode === barcode);
+                
+                if (existing) {
+                    showToast(`Siswa dengan barcode ${barcode} sudah absen hari ini!`, 'warning');
+                    return;
+                }
+                
+                // Get student info
+                const student = studentDatabase[barcode];
+                
+                if (student) {
+                    addAttendance(barcode, student.name, student.class, student.major);
+                    showToast(`Berhasil! ${student.name} telah absen`, 'success');
+                    
+                    // Play success sound (optional - using Web Audio API)
+                    playBeep();
+                } else {
+                    // Unknown barcode - open modal to add
+                    document.getElementById('modalBarcode').value = barcode;
+                    openModal();
+                    showToast('Barcode tidak dikenali. Silakan tambahkan data siswa.', 'warning');
+                }
+            };
+        }
+
+        // Process Manual Input
+        function processManualInput() {
+            const input = document.getElementById('manualBarcode');
+            const barcode = input.value.trim();
+            
+            if (!barcode) {
+                showToast('Masukkan nomor barcode!', 'error');
+                return;
+            }
+            
+            processBarcode(barcode);
+            input.value = '';
+        }
+
+        // Fill Manual Input
+        function fillManual(code) {
+            document.getElementById('manualBarcode').value = code;
+            processManualInput();
+        }
+
+        // Add Attendance to DB
+        function addAttendance(barcode, name, studentClass, major) {
+            const data = {
+                barcode: barcode,
+                name: name,
+                class: studentClass,
+                major: major,
+                date: getTodayString(),
+                time: new Date().toLocaleTimeString('id-ID'),
+                timestamp: new Date().getTime()
+            };
+            
+            const transaction = db.transaction(['attendance'], 'readwrite');
+            const store = transaction.objectStore('attendance');
+            
+            store.add(data).onsuccess = () => {
+                loadTodayData();
+                updateStats();
+            };
+        }
+
+        // Load Today's Data
+        function loadTodayData() {
+            const transaction = db.transaction(['attendance'], 'readonly');
+            const store = transaction.objectStore('attendance');
+            const index = store.index('date');
+            const request = index.getAll(getTodayString());
+            
+            request.onsuccess = () => {
+                const data = request.result;
+                renderTable(data);
+                updateStats();
+            };
+        }
+
+        // Render Table
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            
+            if (data.length === 0) {
+                tbody.innerHTML = `
+                    <tr class="empty-state">
+                        <td colspan="7">
+                            <i class="fas fa-inbox"></i>
+                            <p>Belum ada data absensi</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = data.map((item, index) => `
+                <tr style="animation-delay: ${index * 0.05}s">
+                    <td>${index + 1}</td>
+                    <td><strong>${item.name}</strong></td>
+                    <td>${item.class}</td>
+                    <td>${item.major}</td>
+                    <td><span class="badge badge-time"><i class="fas fa-clock"></i> ${item.time}</span></td>
+                    <td><span class="badge badge-success">Hadir</span></td>
+                    <td>
+                        <button class="btn-delete" onclick="deleteEntry(${item.id})" title="Hapus">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Update Statistics
+        function updateStats() {
+            const transaction = db.transaction(['attendance'], 'readonly');
+            const store = transaction.objectStore('attendance');
+            const index = store.index('date');
+            const request = index.getAll(getTodayString());
+            
+            request.onsuccess = () => {
+                const data = request.result;
+                document.getElementById('totalStudents').textContent = data.length;
+                
+                if (data.length > 0) {
+                    const lastEntry = data[data.length - 1];
+                    document.getElementById('lastScan').textContent = lastEntry.time;
+                } else {
+                    document.getElementById('lastScan').textContent = '--:--';
+                }
+            };
+        }
+
+        // Delete Entry
+        function deleteEntry(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+                const transaction = db.transaction(['attendance'], 'readwrite');
+                const store = transaction.objectStore('attendance');
+                store.delete(id).onsuccess = () => {
+                    loadTodayData();
+                    showToast('Data berhasil dihapus', 'success');
+                };
+            }
+        }
+
+        // Export to Excel
+        function exportToExcel() {
+            const transaction = db.transaction(['attendance'], 'readonly');
+            const store = transaction.objectStore('attendance');
+            const index = store.index('date');
+            const request = index.getAll(getTodayString());
+            
+            request.onsuccess = () => {
+                const data = request.result;
+                
+                if (data.length === 0) {
+                    showToast('Tidak ada data untuk diekspor!', 'error');
+                    return;
+                }
+                
+                // Prepare data for Excel
+                const excelData = data.map((item, index) => ({
+                    'No': index + 1,
+                    'Nama_Siswa': item.name,
+                    'Kelas': item.class,
+                    'Jurusan': item.major,
+                    'Tanggal': item.date,
+                    'Waktu': item.time,
+                    'Barcode': item.barcode
+                }));
+                
+                // Create worksheet
+                const ws = XLSX.utils.json_to_sheet(excelData);
+                
+                // Set column widths
+                ws['!cols'] = [
+                    { wch: 5 },
+                    { wch: 25 },
+                    { wch: 10 },
+                    { wch: 15 },
+                    { wch: 15 },
+                    { wch: 15 },
+                    { wch: 15 }
+                ];
+                
+                // Create workbook
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Absensi");
+                
+                // Generate filename with date
+                const filename = `Absensi_12RPL_${getTodayString()}.xlsx`;
+                
+                // Save file
+                XLSX.writeFile(wb, filename);
+                
+                showToast(`File ${filename} berhasil diunduh!`, 'success');
+            };
+        }
+
+        // Clear All Data
+        function clearAllData() {
+            if (confirm('PERINGATAN: Ini akan menghapus SEMUA data absensi hari ini! Lanjutkan?')) {
+                const transaction = db.transaction(['attendance'], 'readwrite');
+                const store = transaction.objectStore('attendance');
+                const index = store.index('date');
+                const request = index.openCursor(IDBKeyRange.only(getTodayString()));
+                
+                request.onsuccess = (event) => {
+                    const cursor = event.target.result;
+                    if (cursor) {
+                        store.delete(cursor.primaryKey);
+                        cursor.continue();
+                    } else {
+                        loadTodayData();
+                        showToast('Semua data hari ini telah dihapus', 'success');
+                    }
+                };
+            }
+        }
+
+        // Load Sample Data
+        function loadSampleData() {
+            const samples = [
+                { barcode: 'RPL1001', name: 'Ade Fajriah', class: 'XII', major: 'RPL' },
+                { barcode: 'RPL1002', name: 'Aisah', class: 'XII', major: 'RPL' },
+                { barcode: 'RPL1003', name: 'Anggun Mega Aini', class: 'XII', major: 'RPL' }
+            ];
+            
+            let added = 0;
+            samples.forEach((student, index) => {
+                setTimeout(() => {
+                    addAttendance(student.barcode, student.name, student.class, student.major);
+                    added++;
+                    if (added === samples.length) {
+                        showToast('Data sample berhasil dimuat!', 'success');
+                    }
+                }, index * 200);
+            });
+        }
+
+        // Modal Functions
+        function openModal() {
+            document.getElementById('addModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('addModal').classList.remove('active');
+            document.getElementById('addForm').reset();
+        }
+
+        function saveManualEntry(e) {
+            e.preventDefault();
+            
+            const barcode = document.getElementById('modalBarcode').value;
+            const name = document.getElementById('modalName').value;
+            const studentClass = document.getElementById('modalClass').value;
+            const major = document.getElementById('modalMajor').value;
+            
+            // Check if already exists today
+            const transaction = db.transaction(['attendance'], 'readonly');
+            const store = transaction.objectStore('attendance');
+            const index = store.index('date');
+            const request = index.getAll(getTodayString());
+            
+            request.onsuccess = () => {
+                const todayData = request.result;
+                const existing = todayData.find(item => item.barcode === barcode);
+                
+                if (existing) {
+                    showToast('Siswa dengan barcode ini sudah absen hari ini!', 'error');
+                    return;
+                }
+                
+                addAttendance(barcode, name, studentClass, major);
+                closeModal();
+                showToast('Data berhasil ditambahkan!', 'success');
+            };
+        }
+
+        // Toast Notification
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: 'check-circle',
+                error: 'times-circle',
+                warning: 'exclamation-circle'
+            };
+            
+            toast.innerHTML = `
+                <i class="fas fa-${icons[type]} toast-icon"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Play Beep Sound
+        function playBeep() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('addModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
