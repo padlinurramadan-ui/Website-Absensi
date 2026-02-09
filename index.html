@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Absensi Hadir Siswa 12 RPL</title>
-    
+    <!-- By Padli Nurramadhan -->
     <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -33,6 +33,7 @@
             --success: #10b981;
             --warning: #f59e0b;
             --danger: #ef4444;
+            --info: #3b82f6;
         }
 
         body {
@@ -458,6 +459,11 @@
             color: white;
         }
 
+        .btn-info {
+            background: linear-gradient(135deg, var(--info), #1d4ed8);
+            color: white;
+        }
+
         /* Table Styles */
         .table-container {
             overflow-x: auto;
@@ -520,6 +526,11 @@
         .badge-success {
             background: #d1fae5;
             color: #065f46;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
         }
 
         .badge-time {
@@ -699,6 +710,36 @@
 
         .btn-delete:hover {
             background: #fee2e2;
+            transform: scale(1.1);
+        }
+
+        .btn-bolos {
+            background: transparent;
+            color: var(--warning);
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-bolos:hover {
+            background: #fef3c7;
+            transform: scale(1.1);
+        }
+
+        .btn-batal-bolos {
+            background: transparent;
+            color: var(--success);
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-batal-bolos:hover {
+            background: #d1fae5;
             transform: scale(1.1);
         }
 
@@ -918,6 +959,22 @@
                 width: 100%;
             }
         }
+
+        /* Row styling for different statuses */
+        tr.bolos {
+            background: #fef2f2 !important;
+            opacity: 0.8;
+        }
+
+        tr.bolos td {
+            text-decoration: line-through;
+            color: #991b1b;
+        }
+
+        tr.bolos .badge-success {
+            background: #fee2e2;
+            color: #991b1b;
+        }
     </style>
 </head>
 <body>
@@ -1088,14 +1145,15 @@
                                     <th>Nama Siswa</th>
                                     <th>Kelas</th>
                                     <th>Jurusan</th>
-                                    <th>Waktu</th>
+                                    <th>Waktu Hadir</th>
                                     <th>Status</th>
+                                    <th>Waktu Bolos</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="tableBody">
                                 <tr class="empty-state">
-                                    <td colspan="7">
+                                    <td colspan="8">
                                         <i class="fas fa-inbox"></i>
                                         <p>Belum ada data absensi</p>
                                     </td>
@@ -1256,6 +1314,30 @@
         </div>
     </div>
 
+    <!-- Modal Bolos -->
+    <div class="modal" id="bolosModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-slash"></i> Konfirmasi Bolos</h2>
+            </div>
+            <div class="form-group">
+                <p>Apakah Anda yakin ingin menandai siswa ini sebagai <strong>Bolos</strong>?</p>
+                <p style="margin-top: 1rem; color: #64748b;">
+                    <i class="fas fa-info-circle"></i> 
+                    Siswa yang sudah ditandai bolos akan dicatat waktu bolosnya dan statusnya akan berubah di Excel.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" onclick="closeBolosModal()" style="background: var(--gray-200); color: var(--gray-700);">
+                    Batal
+                </button>
+                <button type="button" class="btn btn-warning" onclick="confirmBolos()">
+                    <i class="fas fa-check"></i> Ya, Tandai Bolos
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Print Area -->
     <div class="print-area" id="printArea"></div>
 
@@ -1263,12 +1345,13 @@
         // Database Setup (IndexedDB)
         let db;
         const DB_NAME = 'AbsensiDB';
-        const DB_VERSION = 1;
+        const DB_VERSION = 2; // Upgraded version for new schema
         let html5QrCode;
         let isScanning = false;
         let currentDate = new Date();
         let currentFormat = 'CODE128';
         let generatedBarcodes = [];
+        let currentBolosId = null;
 
         // Sample Data Siswa (Simulasi Database Siswa)
         const studentDatabase = {
@@ -1525,7 +1608,9 @@
                 major: major,
                 date: getTodayString(),
                 time: new Date().toLocaleTimeString('id-ID'),
-                timestamp: new Date().getTime()
+                timestamp: new Date().getTime(),
+                status: 'hadir',
+                bolosTime: null
             };
             
             const transaction = db.transaction(['attendance'], 'readwrite');
@@ -1558,7 +1643,7 @@
             if (data.length === 0) {
                 tbody.innerHTML = `
                     <tr class="empty-state">
-                        <td colspan="7">
+                        <td colspan="8">
                             <i class="fas fa-inbox"></i>
                             <p>Belum ada data absensi</p>
                         </td>
@@ -1568,17 +1653,38 @@
             }
             
             tbody.innerHTML = data.map((item, index) => `
-                <tr style="animation-delay: ${index * 0.05}s">
+                <tr style="animation-delay: ${index * 0.05}s" class="${item.status === 'bolos' ? 'bolos' : ''}">
                     <td>${index + 1}</td>
                     <td><strong>${item.name}</strong></td>
                     <td>${item.class}</td>
                     <td>${item.major}</td>
                     <td><span class="badge badge-time"><i class="fas fa-clock"></i> ${item.time}</span></td>
-                    <td><span class="badge badge-success">Hadir</span></td>
                     <td>
-                        <button class="btn-delete" onclick="deleteEntry(${item.id})" title="Hapus">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
+                        ${item.status === 'bolos' 
+                            ? '<span class="badge badge-danger"><i class="fas fa-user-slash"></i> Bolos</span>' 
+                            : '<span class="badge badge-success"><i class="fas fa-check"></i> Hadir</span>'
+                        }
+                    </td>
+                    <td>
+                        ${item.bolosTime 
+                            ? `<span class="badge badge-danger"><i class="fas fa-clock"></i> ${item.bolosTime}</span>` 
+                            : '-'
+                        }
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 0.3rem;">
+                            ${item.status === 'hadir' 
+                                ? `<button class="btn-bolos" onclick="openBolosModal(${item.id})" title="Tandai Bolos">
+                                     <i class="fas fa-user-slash"></i>
+                                   </button>`
+                                : `<button class="btn-batal-bolos" onclick="batalBolos(${item.id})" title="Batal Bolos">
+                                     <i class="fas fa-undo"></i>
+                                   </button>`
+                            }
+                            <button class="btn-delete" onclick="deleteEntry(${item.id})" title="Hapus">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `).join('');
@@ -1593,7 +1699,9 @@
             
             request.onsuccess = () => {
                 const data = request.result;
-                document.getElementById('totalStudents').textContent = data.length;
+                const hadirCount = data.filter(item => item.status === 'hadir').length;
+                const bolosCount = data.filter(item => item.status === 'bolos').length;
+                document.getElementById('totalStudents').textContent = `${hadirCount} (${bolosCount} bolos)`;
                 
                 if (data.length > 0) {
                     const lastEntry = data[data.length - 1];
@@ -1614,6 +1722,62 @@
                     showToast('Data berhasil dihapus', 'success');
                 };
             }
+        }
+
+        // Bolos Functions
+        function openBolosModal(id) {
+            currentBolosId = id;
+            document.getElementById('bolosModal').classList.add('active');
+        }
+
+        function closeBolosModal() {
+            document.getElementById('bolosModal').classList.remove('active');
+            currentBolosId = null;
+        }
+
+        function confirmBolos() {
+            if (!currentBolosId) return;
+            
+            const transaction = db.transaction(['attendance'], 'readwrite');
+            const store = transaction.objectStore('attendance');
+            const request = store.get(currentBolosId);
+            
+            request.onsuccess = () => {
+                const data = request.result;
+                if (data) {
+                    data.status = 'bolos';
+                    data.bolosTime = new Date().toLocaleTimeString('id-ID');
+                    
+                    const updateRequest = store.put(data);
+                    updateRequest.onsuccess = () => {
+                        loadTodayData();
+                        showToast(`Siswa ${data.name} ditandai sebagai bolos`, 'warning');
+                        closeBolosModal();
+                    };
+                }
+            };
+        }
+
+        function batalBolos(id) {
+            if (!confirm('Batalkan status bolos? Siswa akan kembali ke status hadir.')) return;
+            
+            const transaction = db.transaction(['attendance'], 'readwrite');
+            const store = transaction.objectStore('attendance');
+            const request = store.get(id);
+            
+            request.onsuccess = () => {
+                const data = request.result;
+                if (data) {
+                    data.status = 'hadir';
+                    data.bolosTime = null;
+                    
+                    const updateRequest = store.put(data);
+                    updateRequest.onsuccess = () => {
+                        loadTodayData();
+                        showToast(`Status ${data.name} dikembalikan ke hadir`, 'success');
+                    };
+                }
+            };
         }
 
         // Export to Excel
@@ -1638,7 +1802,9 @@
                     'Kelas': item.class,
                     'Jurusan': item.major,
                     'Tanggal': item.date,
-                    'Waktu': item.time,
+                    'Waktu_Hadir': item.time,
+                    'Status': item.status === 'bolos' ? 'BOL' : 'HADIR',
+                    'Waktu_Bolos': item.bolosTime || '-',
                     'Barcode': item.barcode
                 }));
                 
@@ -1652,6 +1818,8 @@
                     { wch: 10 },
                     { wch: 15 },
                     { wch: 15 },
+                    { wch: 15 },
+                    { wch: 10 },
                     { wch: 15 },
                     { wch: 15 }
                 ];
@@ -1801,8 +1969,12 @@
         // Close modal when clicking outside
         window.onclick = function(event) {
             const modal = document.getElementById('addModal');
+            const bolosModal = document.getElementById('bolosModal');
             if (event.target === modal) {
                 closeModal();
+            }
+            if (event.target === bolosModal) {
+                closeBolosModal();
             }
         }
 
