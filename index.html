@@ -158,6 +158,9 @@
             padding: 1rem 2rem 0;
             display: flex;
             gap: 0.5rem;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 10;
         }
 
         .nav-tab {
@@ -172,6 +175,8 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            position: relative;
+            z-index: 11;
         }
 
         .nav-tab:hover {
@@ -181,6 +186,208 @@
         .nav-tab.active {
             background: white;
             color: var(--primary);
+        }
+
+        /* Info Button in Nav */
+        .info-nav-btn {
+            padding: 0.8rem 1.5rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 12px 12px 0 0;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+            position: relative;
+            z-index: 11;
+        }
+
+        .info-nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .info-nav-btn i {
+            font-size: 1.2rem;
+        }
+
+        /* Profile Modal */
+        .profile-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 3000;
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .profile-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 450px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            animation: slideUp 0.4s ease;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            border: 4px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .profile-role {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .profile-body {
+            padding: 2rem;
+        }
+
+        .profile-info-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            background: var(--gray-50);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .profile-info-item:hover {
+            background: var(--gray-100);
+            transform: translateX(5px);
+        }
+
+        .profile-info-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .profile-info-text {
+            flex: 1;
+        }
+
+        .profile-info-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-bottom: 0.2rem;
+        }
+
+        .profile-info-value {
+            font-weight: 600;
+            color: var(--primary-dark);
+            font-size: 0.95rem;
+        }
+
+        .social-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+        }
+
+        .social-btn {
+            padding: 0.8rem;
+            border-radius: 12px;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .social-btn.whatsapp {
+            background: linear-gradient(135deg, #25d366, #128c7e);
+        }
+
+        .social-btn.instagram {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+        }
+
+        .social-btn.facebook {
+            background: linear-gradient(135deg, #1877f2, #0d5cb6);
+        }
+
+        .social-btn.github {
+            background: linear-gradient(135deg, #333, #24292e);
+        }
+
+        .close-profile {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-profile:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg);
         }
 
         /* Main Container */
@@ -280,6 +487,14 @@
             
             .nav-tabs {
                 flex-wrap: wrap;
+            }
+
+            .info-nav-btn {
+                margin-left: 0;
+                margin-top: 0.5rem;
+                width: 100%;
+                border-radius: 12px;
+                justify-content: center;
             }
         }
 
@@ -975,13 +1190,207 @@
             background: #fee2e2;
             color: #991b1b;
         }
+
+        /* Mobile Responsive Fixes */
+        @media (max-width: 640px) {
+            .container {
+                padding: 0 1rem;
+                margin: 1rem auto;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .title-section h1 {
+                font-size: 1.4rem;
+            }
+
+            .title-section p {
+                font-size: 0.8rem;
+            }
+
+            .date-display {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .logo-icon {
+                font-size: 2rem;
+            }
+
+            .nav-tabs {
+                padding: 1rem 1rem 0;
+            }
+
+            .nav-tab, .info-nav-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+
+            .stat-info h3 {
+                font-size: 1.5rem;
+            }
+
+            .stat-info p {
+                font-size: 0.8rem;
+            }
+
+            .card-title {
+                font-size: 1.1rem;
+            }
+
+            .btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 0.8rem;
+                font-size: 0.85rem;
+            }
+
+            .barcode-samples {
+                grid-template-columns: 1fr;
+            }
+
+            .action-bar {
+                gap: 0.5rem;
+            }
+
+            .action-bar .btn {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .manual-input {
+                flex-direction: column;
+            }
+
+            .manual-input .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .generator-grid {
+                gap: 1rem;
+            }
+
+            .barcode-preview {
+                min-height: 200px;
+                padding: 1rem;
+            }
+
+            .social-links {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-info-item {
+                padding: 0.8rem;
+            }
+
+            .profile-info-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .profile-info-value {
+                font-size: 0.9rem;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+            }
+
+            .toast {
+                min-width: auto;
+                max-width: 90%;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="bg-animation"></div>
-    
+    <!-- By Padli Nurramadhan -->
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Profile Modal -->
+    <div class="profile-modal" id="profileModal">
+        <div class="profile-card">
+            <div class="profile-header">
+                <button class="close-profile" onclick="closeProfileModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="profile-avatar">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="profile-name">Padli Nurramadhan</div>
+                <div class="profile-role">Web Developer</div>
+            </div>
+            <div class="profile-body">
+                <div class="profile-info-item">
+                    <div class="profile-info-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="profile-info-text">
+                        <div class="profile-info-label">Nama Lengkap</div>
+                        <div class="profile-info-value">Padli Nurramadhan</div>
+                    </div>
+                </div>
+                
+                <div class="profile-info-item">
+                    <div class="profile-info-icon">
+                        <i class="fas fa-birthday-cake"></i>
+                    </div>
+                    <div class="profile-info-text">
+                        <div class="profile-info-label">Umur</div>
+                        <div class="profile-info-value">17 Tahun</div>
+                    </div>
+                </div>
+                
+                <div class="profile-info-item">
+                    <div class="profile-info-icon">
+                        <i class="fas fa-school"></i>
+                    </div>
+                    <div class="profile-info-text">
+                        <div class="profile-info-label">Asal Sekolah</div>
+                        <div class="profile-info-value">SMKS Saintek Nurul Muslimin Karawang</div>
+                    </div>
+                </div>
+
+                <div class="social-links">
+                    <a href="https://wa.me/6282249665662" target="_blank" class="social-btn whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                        <span>WhatsApp</span>
+                    </a>
+                    <a href="https://instagram.com/dlyy_suka_python" target="_blank" class="social-btn instagram">
+                        <i class="fab fa-instagram"></i>
+                        <span>Instagram</span>
+                    </a>
+                    <a href="https://www.facebook.com/Dlyy.fine" target="_blank" class="social-btn facebook">
+                        <i class="fab fa-facebook-f"></i>
+                        <span>Facebook</span>
+                    </a>
+                    <a href="https://github.com/padlinurramadan-ui" target="_blank" class="social-btn github">
+                        <i class="fab fa-github"></i>
+                        <span>GitHub</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Header -->
     <header>
@@ -1008,6 +1417,10 @@
             </button>
             <button class="nav-tab" onclick="switchTab('generator')" id="tab-generator">
                 <i class="fas fa-barcode"></i> Generator Barcode
+            </button>
+            <button class="info-nav-btn" onclick="openProfileModal()">
+                <i class="fas fa-info-circle"></i>
+                <span>Info Developer</span>
             </button>
         </div>
     </header>
@@ -1420,6 +1833,15 @@
                 }
             }, 60000);
         });
+
+        // Profile Modal Functions
+        function openProfileModal() {
+            document.getElementById('profileModal').classList.add('active');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.remove('active');
+        }
 
         // Tab Switching
         function switchTab(tabName) {
@@ -1970,11 +2392,15 @@
         window.onclick = function(event) {
             const modal = document.getElementById('addModal');
             const bolosModal = document.getElementById('bolosModal');
+            const profileModal = document.getElementById('profileModal');
             if (event.target === modal) {
                 closeModal();
             }
             if (event.target === bolosModal) {
                 closeBolosModal();
+            }
+            if (event.target === profileModal) {
+                closeProfileModal();
             }
         }
 
@@ -2258,4 +2684,3 @@
     </script>
 </body>
 </html>
-
