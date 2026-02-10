@@ -360,7 +360,7 @@ Sosial Media:
 
 📝 Changelog
 
-v2.0 (2024-01-15)
+v2.0 (2026-02-10)
 - ✨ Tambah fitur status Izin dan Sakit
 - ✨ Export Excel dengan format terpisah (Izin/Sakit di bawah, longkap 1 field)
 - ✨ Modal ubah status dengan visual yang jelas
@@ -368,7 +368,7 @@ v2.0 (2024-01-15)
 - 🔧 Perbaikan sorting data (Hadir/Bolos di atas, Izin/Sakit di bawah)
 - 🎨 Update UI dengan warna status baru
 
-v1.0 (2024-01-01)
+v1.0 (2026-02-08)
 - 🚀 Rilis awal
 - ✨ Fitur scan barcode dan input manual
 - ✨ Status Hadir dan Bolos
@@ -381,7 +381,7 @@ v1.0 (2024-01-01)
 
 Proyek ini dilisensikan di bawah [MIT License](LICENSE).
 
-Hak Cipta © 2024 Padli Nurramadhan
+Hak Cipta © 2026 Padli Nurramadhan
 
 Dibebaskan untuk:
 - ✅ Penggunaan pribadi
@@ -413,24 +413,4 @@ Jika mengalami masalah atau memiliki saran:
 
 1. Buat Issue di GitHub repository
 2. Hubungi langsung via WhatsApp: [+62 822-4966-5662](https://wa.me/6282249665662)
-3. Email: [email@example.com](mailto:email@example.com)
-
----
-
-Cara Menggunakan README Ini:
-
-1. Simpan sebagai `README.md` di folder root project Anda
-2. Upload ke GitHub bersama file `index.html`
-3. GitHub akan otomatis menampilkan README ini di halaman repository
-
-Fitur Markdown yang Digunakan:
-
-- ✅ Badges/Shield untuk versi dan status
-- ✅ Emoji untuk visual yang menarik
-- ✅ Tabel untuk data terstruktur
-- ✅ Code blocks untuk perintah terminal
-- ✅ Link ke sosial media dan kontak
-- ✅ Anchor links untuk navigasi cepat
-- ✅ Alerts/Callouts untuk catatan penting
-
-README ini dirancang profesional, lengkap, dan mudah dibaca baik di GitHub maupun di text editor biasa.
+3. Email: [padlinurramadan@gmail.com](mailto:padlinurrmadan@gmail.com)
