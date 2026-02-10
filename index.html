@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Absensi Hadir Siswa 12 RPL</title>
-    <!-- By Padli Nurramadhan -->
+    
     <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -34,6 +34,8 @@
             --warning: #f59e0b;
             --danger: #ef4444;
             --info: #3b82f6;
+            --purple: #8b5cf6;
+            --orange: #f97316;
         }
 
         body {
@@ -201,7 +203,6 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            margin-left: auto;
             position: relative;
             z-index: 11;
         }
@@ -211,6 +212,32 @@
         }
 
         .info-nav-btn i {
+            font-size: 1.2rem;
+        }
+
+        /* Guide Button in Nav */
+        .guide-nav-btn {
+            padding: 0.8rem 1.5rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 12px 12px 0 0;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+            position: relative;
+            z-index: 11;
+        }
+
+        .guide-nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .guide-nav-btn i {
             font-size: 1.2rem;
         }
 
@@ -390,6 +417,215 @@
             transform: rotate(90deg);
         }
 
+        /* Guide Modal */
+        .guide-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 3000;
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .guide-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .guide-card {
+            background: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 85vh;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            animation: slideUp 0.4s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .guide-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .guide-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .guide-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .guide-search {
+            margin-bottom: 1rem;
+        }
+
+        .guide-search input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .guide-search input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .guide-search-icon {
+            position: relative;
+        }
+
+        .guide-search-icon i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-700);
+        }
+
+        .guide-class-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .guide-class-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .guide-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .guide-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            background: var(--gray-50);
+            border-radius: 10px;
+            border: 1px solid var(--gray-200);
+            transition: all 0.2s ease;
+        }
+
+        .guide-item:hover {
+            background: var(--gray-100);
+            transform: translateX(5px);
+            border-color: var(--primary-light);
+        }
+
+        .guide-item-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .guide-item-name {
+            font-weight: 600;
+            color: var(--primary-dark);
+            font-size: 0.9rem;
+        }
+
+        .guide-item-code {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #64748b;
+            background: var(--gray-200);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.2rem;
+            display: inline-block;
+        }
+
+        .guide-item-copy {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .guide-item-copy:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        .close-guide {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-guide:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg);
+        }
+
+        .guide-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .guide-stat-item {
+            background: var(--gray-50);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--gray-700);
+        }
+
+        .guide-stat-item strong {
+            color: var(--primary-dark);
+        }
+
         /* Main Container */
         .container {
             max-width: 1400px;
@@ -489,12 +725,16 @@
                 flex-wrap: wrap;
             }
 
-            .info-nav-btn {
+            .info-nav-btn, .guide-nav-btn {
                 margin-left: 0;
                 margin-top: 0.5rem;
                 width: 100%;
                 border-radius: 12px;
                 justify-content: center;
+            }
+
+            .guide-list {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -679,6 +919,16 @@
             color: white;
         }
 
+        .btn-purple {
+            background: linear-gradient(135deg, var(--purple), #7c3aed);
+            color: white;
+        }
+
+        .btn-orange {
+            background: linear-gradient(135deg, var(--orange), #ea580c);
+            color: white;
+        }
+
         /* Table Styles */
         .table-container {
             overflow-x: auto;
@@ -746,6 +996,21 @@
         .badge-danger {
             background: #fee2e2;
             color: #991b1b;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-purple {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .badge-orange {
+            background: #ffedd5;
+            color: #9a3412;
         }
 
         .badge-time {
@@ -955,6 +1220,36 @@
 
         .btn-batal-bolos:hover {
             background: #d1fae5;
+            transform: scale(1.1);
+        }
+
+        .btn-izin {
+            background: transparent;
+            color: var(--purple);
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-izin:hover {
+            background: #ede9fe;
+            transform: scale(1.1);
+        }
+
+        .btn-sakit {
+            background: transparent;
+            color: var(--orange);
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-sakit:hover {
+            background: #ffedd5;
             transform: scale(1.1);
         }
 
@@ -1191,6 +1486,14 @@
             color: #991b1b;
         }
 
+        tr.izin {
+            background: #ede9fe !important;
+        }
+
+        tr.sakit {
+            background: #ffedd5 !important;
+        }
+
         /* Mobile Responsive Fixes */
         @media (max-width: 640px) {
             .container {
@@ -1223,7 +1526,7 @@
                 padding: 1rem 1rem 0;
             }
 
-            .nav-tab, .info-nav-btn {
+            .nav-tab, .info-nav-btn, .guide-nav-btn {
                 padding: 0.6rem 1rem;
                 font-size: 0.9rem;
             }
@@ -1317,12 +1620,76 @@
                 min-width: auto;
                 max-width: 90%;
             }
+
+            .guide-card {
+                max-height: 90vh;
+            }
+
+            .guide-body {
+                padding: 1rem;
+            }
+
+            .guide-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Status Modal Styles */
+        .status-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .status-option {
+            padding: 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .status-option:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .status-option.selected {
+            border-color: var(--primary);
+            background: var(--gray-50);
+        }
+
+        .status-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .status-option.hadir { color: var(--success); }
+        .status-option.bolos { color: var(--danger); }
+        .status-option.izin { color: var(--purple); }
+        .status-option.sakit { color: var(--orange); }
+
+        /* Quick Add Buttons */
+        .quick-add-btns {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-add-btns .btn {
+            flex: 1;
+            min-width: 120px;
+            justify-content: center;
         }
     </style>
 </head>
 <body>
     <div class="bg-animation"></div>
-    <!-- By Padli Nurramadhan -->
+    
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
@@ -1392,6 +1759,59 @@
         </div>
     </div>
 
+    <!-- Guide Modal -->
+    <div class="guide-modal" id="guideModal">
+        <div class="guide-card">
+            <div class="guide-header">
+                <button class="close-guide" onclick="closeGuideModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="guide-title">
+                    <i class="fas fa-book"></i>
+                    <span>Guide - Daftar Siswa Terdaftar</span>
+                </div>
+            </div>
+            <div class="guide-body">
+                <div class="guide-search-icon guide-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="guideSearch" placeholder="Cari nama atau kode..." oninput="filterGuide()">
+                </div>
+                
+                <div class="guide-stats">
+                    <div class="guide-stat-item">
+                        Total: <strong id="totalStudentsCount">0</strong> siswa
+                    </div>
+                    <div class="guide-stat-item">
+                        XII RPL 1: <strong id="rpl1Count">0</strong>
+                    </div>
+                    <div class="guide-stat-item">
+                        XII RPL 2: <strong id="rpl2Count">0</strong>
+                    </div>
+                </div>
+
+                <div class="guide-class-section">
+                    <div class="guide-class-title">
+                        <i class="fas fa-users"></i>
+                        XII RPL 1
+                    </div>
+                    <div class="guide-list" id="guideListRPL1">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+
+                <div class="guide-class-section">
+                    <div class="guide-class-title">
+                        <i class="fas fa-users"></i>
+                        XII RPL 2
+                    </div>
+                    <div class="guide-list" id="guideListRPL2">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Header -->
     <header>
         <div class="header-content">
@@ -1417,6 +1837,10 @@
             </button>
             <button class="nav-tab" onclick="switchTab('generator')" id="tab-generator">
                 <i class="fas fa-barcode"></i> Generator Barcode
+            </button>
+            <button class="guide-nav-btn" onclick="openGuideModal()">
+                <i class="fas fa-book"></i>
+                <span>Guide</span>
             </button>
             <button class="info-nav-btn" onclick="openProfileModal()">
                 <i class="fas fa-info-circle"></i>
@@ -1497,6 +1921,27 @@
                             </div>
                             <button class="btn btn-primary" onclick="processManualInput()">
                                 <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Add Status Buttons -->
+                    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid var(--gray-100);">
+                        <h4 style="margin-bottom: 1rem; color: var(--primary-dark);">
+                            <i class="fas fa-plus-circle"></i> Tambah Status Manual
+                        </h4>
+                        <div class="quick-add-btns">
+                            <button class="btn btn-success" onclick="openQuickAddModal('hadir')">
+                                <i class="fas fa-check"></i> Hadir
+                            </button>
+                            <button class="btn btn-danger" onclick="openQuickAddModal('bolos')">
+                                <i class="fas fa-user-slash"></i> Bolos
+                            </button>
+                            <button class="btn btn-purple" onclick="openQuickAddModal('izin')">
+                                <i class="fas fa-envelope"></i> Izin
+                            </button>
+                            <button class="btn btn-orange" onclick="openQuickAddModal('sakit')">
+                                <i class="fas fa-notes-medical"></i> Sakit
                             </button>
                         </div>
                     </div>
@@ -1715,8 +2160,57 @@
                     <label>Jurusan</label>
                     <input type="text" id="modalMajor" value="RPL" required>
                 </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="modalStatus" required>
+                        <option value="hadir">Hadir</option>
+                        <option value="bolos">Bolos</option>
+                        <option value="izin">Izin</option>
+                        <option value="sakit">Sakit</option>
+                    </select>
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn" onclick="closeModal()" style="background: var(--gray-200); color: var(--gray-700);">
+                        Batal
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Quick Add -->
+    <div class="modal" id="quickAddModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> Tambah Status <span id="quickAddStatusTitle"></span></h2>
+            </div>
+            <form id="quickAddForm" onsubmit="saveQuickAdd(event)">
+                <div class="form-group">
+                    <label>Nomor Barcode</label>
+                    <input type="text" id="quickBarcode" required placeholder="Contoh: RPL1009">
+                </div>
+                <div class="form-group">
+                    <label>Nama Siswa (Otomatis terisi jika terdaftar)</label>
+                    <input type="text" id="quickName" placeholder="Nama lengkap siswa">
+                </div>
+                <div class="form-group">
+                    <label>Kelas</label>
+                    <select id="quickClass">
+                        <option value="XII">XII</option>
+                        <option value="XI">XI</option>
+                        <option value="X">X</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Jurusan</label>
+                    <input type="text" id="quickMajor" value="RPL">
+                </div>
+                <input type="hidden" id="quickStatus" value="">
+                <div class="modal-footer">
+                    <button type="button" class="btn" onclick="closeQuickAddModal()" style="background: var(--gray-200); color: var(--gray-700);">
                         Batal
                     </button>
                     <button type="submit" class="btn btn-primary">
@@ -1751,6 +2245,44 @@
         </div>
     </div>
 
+    <!-- Modal Status Change -->
+    <div class="modal" id="statusModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-exchange-alt"></i> Ubah Status Siswa</h2>
+            </div>
+            <div class="form-group">
+                <p>Pilih status baru untuk siswa ini:</p>
+                <div class="status-options">
+                    <div class="status-option hadir" onclick="selectStatus('hadir')">
+                        <i class="fas fa-check-circle"></i>
+                        <div>Hadir</div>
+                    </div>
+                    <div class="status-option bolos" onclick="selectStatus('bolos')">
+                        <i class="fas fa-user-slash"></i>
+                        <div>Bolos</div>
+                    </div>
+                    <div class="status-option izin" onclick="selectStatus('izin')">
+                        <i class="fas fa-envelope"></i>
+                        <div>Izin</div>
+                    </div>
+                    <div class="status-option sakit" onclick="selectStatus('sakit')">
+                        <i class="fas fa-notes-medical"></i>
+                        <div>Sakit</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" onclick="closeStatusModal()" style="background: var(--gray-200); color: var(--gray-700);">
+                    Batal
+                </button>
+                <button type="button" class="btn btn-primary" onclick="confirmStatusChange()">
+                    <i class="fas fa-save"></i> Simpan Perubahan
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Print Area -->
     <div class="print-area" id="printArea"></div>
 
@@ -1758,13 +2290,16 @@
         // Database Setup (IndexedDB)
         let db;
         const DB_NAME = 'AbsensiDB';
-        const DB_VERSION = 2; // Upgraded version for new schema
+        const DB_VERSION = 3; // Upgraded version for new schema with izin/sakit
         let html5QrCode;
         let isScanning = false;
         let currentDate = new Date();
         let currentFormat = 'CODE128';
         let generatedBarcodes = [];
         let currentBolosId = null;
+        let currentStatusId = null;
+        let selectedNewStatus = null;
+        let currentQuickStatus = null;
 
         // Sample Data Siswa (Simulasi Database Siswa)
         const studentDatabase = {
@@ -1822,6 +2357,9 @@
             updateDateDisplay();
             loadTodayData();
             
+            // Initialize Guide immediately
+            initGuide();
+            
             // Update date every minute to check for day change
             setInterval(() => {
                 const now = new Date();
@@ -1834,13 +2372,163 @@
             }, 60000);
         });
 
+        // Guide Functions
+        function initGuide() {
+            console.log('Initializing Guide...');
+            console.log('Student Database:', studentDatabase);
+            
+            const rpl1List = document.getElementById('guideListRPL1');
+            const rpl2List = document.getElementById('guideListRPL2');
+            
+            if (!rpl1List || !rpl2List) {
+                console.error('Guide list elements not found!');
+                return;
+            }
+            
+            // Filter RPL 1 (RPL1001-RPL1017)
+            const rpl1Students = Object.entries(studentDatabase)
+                .filter(([code, data]) => code.startsWith('RPL1'))
+                .sort((a, b) => a[0].localeCompare(b[0]));
+            
+            // Filter RPL 2 (RPL2001-RPL2026)
+            const rpl2Students = Object.entries(studentDatabase)
+                .filter(([code, data]) => code.startsWith('RPL2'))
+                .sort((a, b) => a[0].localeCompare(b[0]));
+            
+            console.log('RPL 1 Students:', rpl1Students);
+            console.log('RPL 2 Students:', rpl2Students);
+            
+            // Render RPL 1
+            if (rpl1Students.length === 0) {
+                rpl1List.innerHTML = '<div style="padding: 1rem; color: #64748b; text-align: center;">Tidak ada data siswa</div>';
+            } else {
+                rpl1List.innerHTML = rpl1Students.map(([code, data]) => `
+                    <div class="guide-item" data-name="${data.name.toLowerCase()}" data-code="${code.toLowerCase()}">
+                        <div class="guide-item-info">
+                            <span class="guide-item-name">${data.name}</span>
+                            <span class="guide-item-code">${code}</span>
+                        </div>
+                        <button class="guide-item-copy" onclick="copyToClipboard('${code}')" title="Copy kode">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+            
+            // Render RPL 2
+            if (rpl2Students.length === 0) {
+                rpl2List.innerHTML = '<div style="padding: 1rem; color: #64748b; text-align: center;">Tidak ada data siswa</div>';
+            } else {
+                rpl2List.innerHTML = rpl2Students.map(([code, data]) => `
+                    <div class="guide-item" data-name="${data.name.toLowerCase()}" data-code="${code.toLowerCase()}">
+                        <div class="guide-item-info">
+                            <span class="guide-item-name">${data.name}</span>
+                            <span class="guide-item-code">${code}</span>
+                        </div>
+                        <button class="guide-item-copy" onclick="copyToClipboard('${code}')" title="Copy kode">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+            
+            updateGuideStats();
+            console.log('Guide initialized successfully');
+        }
+
+        function updateGuideStats() {
+            const rpl1Count = Object.keys(studentDatabase).filter(code => code.startsWith('RPL1')).length;
+            const rpl2Count = Object.keys(studentDatabase).filter(code => code.startsWith('RPL2')).length;
+            const totalCount = Object.keys(studentDatabase).length;
+            
+            const totalElement = document.getElementById('totalStudentsCount');
+            const rpl1Element = document.getElementById('rpl1Count');
+            const rpl2Element = document.getElementById('rpl2Count');
+            
+            if (totalElement) totalElement.textContent = totalCount;
+            if (rpl1Element) rpl1Element.textContent = rpl1Count;
+            if (rpl2Element) rpl2Element.textContent = rpl2Count;
+            
+            console.log(`Stats - Total: ${totalCount}, RPL1: ${rpl1Count}, RPL2: ${rpl2Count}`);
+        }
+
+        function filterGuide() {
+            const searchInput = document.getElementById('guideSearch');
+            if (!searchInput) return;
+            
+            const searchTerm = searchInput.value.toLowerCase();
+            const items = document.querySelectorAll('.guide-item');
+            
+            items.forEach(item => {
+                const name = item.getAttribute('data-name') || '';
+                const code = item.getAttribute('data-code') || '';
+                
+                if (name.includes(searchTerm) || code.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function copyToClipboard(text) {
+            if (!text) return;
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast(`Kode ${text} berhasil disalin!`, 'success');
+                }).catch(() => {
+                    fallbackCopyToClipboard(text);
+                });
+            } else {
+                fallbackCopyToClipboard(text);
+            }
+        }
+
+        function fallbackCopyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast(`Kode ${text} berhasil disalin!`, 'success');
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                showToast('Gagal menyalin kode', 'error');
+            }
+            
+            document.body.removeChild(textarea);
+        }
+
+        function openGuideModal() {
+            const modal = document.getElementById('guideModal');
+            if (modal) {
+                modal.classList.add('active');
+                // Re-render guide when opening to ensure data is fresh
+                initGuide();
+            }
+        }
+
+        function closeGuideModal() {
+            const modal = document.getElementById('guideModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
         // Profile Modal Functions
         function openProfileModal() {
-            document.getElementById('profileModal').classList.add('active');
+            const modal = document.getElementById('profileModal');
+            if (modal) modal.classList.add('active');
         }
 
         function closeProfileModal() {
-            document.getElementById('profileModal').classList.remove('active');
+            const modal = document.getElementById('profileModal');
+            if (modal) modal.classList.remove('active');
         }
 
         // Tab Switching
@@ -1849,13 +2537,17 @@
             document.querySelectorAll('.nav-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
-            document.getElementById('tab-' + tabName).classList.add('active');
+            
+            const tabBtn = document.getElementById('tab-' + tabName);
+            if (tabBtn) tabBtn.classList.add('active');
             
             // Update content
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.add('hidden');
             });
-            document.getElementById('content-' + tabName).classList.remove('hidden');
+            
+            const content = document.getElementById('content-' + tabName);
+            if (content) content.classList.remove('hidden');
             
             // Stop scanner if leaving absensi tab
             if (tabName !== 'absensi' && isScanning) {
@@ -1888,8 +2580,12 @@
         function updateDateDisplay() {
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const dateStr = currentDate.toLocaleDateString('id-ID', options);
-            document.getElementById('currentDate').textContent = dateStr;
-            document.getElementById('currentDay').textContent = currentDate.toLocaleDateString('id-ID', { weekday: 'long' });
+            
+            const currentDateEl = document.getElementById('currentDate');
+            const currentDayEl = document.getElementById('currentDay');
+            
+            if (currentDateEl) currentDateEl.textContent = dateStr;
+            if (currentDayEl) currentDayEl.textContent = currentDate.toLocaleDateString('id-ID', { weekday: 'long' });
         }
 
         // Get Today's Date String
@@ -1911,6 +2607,8 @@
             const container = document.getElementById('scannerContainer');
             const status = document.getElementById('scannerStatus');
             const btn = document.getElementById('toggleBtn');
+            
+            if (!container || !status || !btn) return;
             
             container.style.display = 'block';
             status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memulai kamera...';
@@ -1945,21 +2643,31 @@
             if (html5QrCode) {
                 html5QrCode.stop().then(() => {
                     isScanning = false;
-                    document.getElementById('scannerContainer').style.display = 'none';
-                    document.getElementById('scannerStatus').innerHTML = '<i class="fas fa-info-circle"></i> Scanner dihentikan';
-                    document.getElementById('scannerStatus').classList.remove('scanning');
-                    
+                    const container = document.getElementById('scannerContainer');
+                    const status = document.getElementById('scannerStatus');
                     const btn = document.getElementById('toggleBtn');
-                    btn.innerHTML = '<i class="fas fa-power-off"></i> Mulai';
-                    btn.classList.remove('btn-danger');
-                    btn.classList.add('btn-primary');
+                    
+                    if (container) container.style.display = 'none';
+                    if (status) {
+                        status.innerHTML = '<i class="fas fa-info-circle"></i> Scanner dihentikan';
+                        status.classList.remove('scanning');
+                    }
+                    if (btn) {
+                        btn.innerHTML = '<i class="fas fa-power-off"></i> Mulai';
+                        btn.classList.remove('btn-danger');
+                        btn.classList.add('btn-primary');
+                    }
+                }).catch(err => {
+                    console.error('Error stopping scanner:', err);
                 });
             }
         }
 
         // Scan Success
         function onScanSuccess(decodedText, decodedResult) {
-            processBarcode(decodedText);
+            if (decodedText) {
+                processBarcode(decodedText);
+            }
         }
 
         function onScanFailure(error) {
@@ -1968,6 +2676,8 @@
 
         // Process Barcode
         function processBarcode(barcode) {
+            if (!barcode || !db) return;
+            
             // Check if already scanned today
             const transaction = db.transaction(['attendance'], 'readonly');
             const store = transaction.objectStore('attendance');
@@ -1975,7 +2685,7 @@
             const request = index.getAll(getTodayString());
             
             request.onsuccess = () => {
-                const todayData = request.result;
+                const todayData = request.result || [];
                 const existing = todayData.find(item => item.barcode === barcode);
                 
                 if (existing) {
@@ -1987,23 +2697,28 @@
                 const student = studentDatabase[barcode];
                 
                 if (student) {
-                    addAttendance(barcode, student.name, student.class, student.major);
+                    addAttendance(barcode, student.name, student.class, student.major, 'hadir');
                     showToast(`Berhasil! ${student.name} telah absen`, 'success');
-                    
-                    // Play success sound (optional - using Web Audio API)
                     playBeep();
                 } else {
                     // Unknown barcode - open modal to add
-                    document.getElementById('modalBarcode').value = barcode;
+                    const modalBarcode = document.getElementById('modalBarcode');
+                    if (modalBarcode) modalBarcode.value = barcode;
                     openModal();
                     showToast('Barcode tidak dikenali. Silakan tambahkan data siswa.', 'warning');
                 }
+            };
+            
+            request.onerror = () => {
+                showToast('Error memeriksa data absensi', 'error');
             };
         }
 
         // Process Manual Input
         function processManualInput() {
             const input = document.getElementById('manualBarcode');
+            if (!input) return;
+            
             const barcode = input.value.trim();
             
             if (!barcode) {
@@ -2017,23 +2732,35 @@
 
         // Fill Manual Input
         function fillManual(code) {
-            document.getElementById('manualBarcode').value = code;
-            processManualInput();
+            const input = document.getElementById('manualBarcode');
+            if (input) {
+                input.value = code;
+                processManualInput();
+            }
         }
 
         // Add Attendance to DB
-        function addAttendance(barcode, name, studentClass, major) {
+        function addAttendance(barcode, name, studentClass, major, status = 'hadir') {
+            if (!db) return;
+            
+            const now = new Date();
             const data = {
                 barcode: barcode,
                 name: name,
                 class: studentClass,
                 major: major,
                 date: getTodayString(),
-                time: new Date().toLocaleTimeString('id-ID'),
-                timestamp: new Date().getTime(),
-                status: 'hadir',
-                bolosTime: null
+                time: now.toLocaleTimeString('id-ID'),
+                timestamp: now.getTime(),
+                status: status,
+                bolosTime: null,
+                keterangan: ''
             };
+            
+            // Jika status izin atau sakit, tidak ada waktu hadir
+            if (status === 'izin' || status === 'sakit') {
+                data.time = '-';
+            }
             
             const transaction = db.transaction(['attendance'], 'readwrite');
             const store = transaction.objectStore('attendance');
@@ -2046,13 +2773,15 @@
 
         // Load Today's Data
         function loadTodayData() {
+            if (!db) return;
+            
             const transaction = db.transaction(['attendance'], 'readonly');
             const store = transaction.objectStore('attendance');
             const index = store.index('date');
             const request = index.getAll(getTodayString());
             
             request.onsuccess = () => {
-                const data = request.result;
+                const data = request.result || [];
                 renderTable(data);
                 updateStats();
             };
@@ -2061,8 +2790,9 @@
         // Render Table
         function renderTable(data) {
             const tbody = document.getElementById('tableBody');
+            if (!tbody) return;
             
-            if (data.length === 0) {
+            if (!data || data.length === 0) {
                 tbody.innerHTML = `
                     <tr class="empty-state">
                         <td colspan="8">
@@ -2074,19 +2804,31 @@
                 return;
             }
             
-            tbody.innerHTML = data.map((item, index) => `
-                <tr style="animation-delay: ${index * 0.05}s" class="${item.status === 'bolos' ? 'bolos' : ''}">
+            // Sort data: hadir dan bolos di atas, izin dan sakit di bawah
+            // Dalam grup yang sama, urutkan berdasarkan timestamp
+            const sortedData = [...data].sort((a, b) => {
+                const statusOrder = { 'hadir': 0, 'bolos': 1, 'izin': 2, 'sakit': 3 };
+                const orderA = statusOrder[a.status] || 0;
+                const orderB = statusOrder[b.status] || 0;
+                
+                if (orderA !== orderB) {
+                    return orderA - orderB;
+                }
+                return (a.timestamp || 0) - (b.timestamp || 0);
+            });
+            
+            tbody.innerHTML = sortedData.map((item, index) => {
+                const statusBadge = getStatusBadge(item.status);
+                const rowClass = item.status === 'bolos' ? 'bolos' : item.status === 'izin' ? 'izin' : item.status === 'sakit' ? 'sakit' : '';
+                
+                return `
+                <tr style="animation-delay: ${index * 0.05}s" class="${rowClass}">
                     <td>${index + 1}</td>
                     <td><strong>${item.name}</strong></td>
                     <td>${item.class}</td>
                     <td>${item.major}</td>
                     <td><span class="badge badge-time"><i class="fas fa-clock"></i> ${item.time}</span></td>
-                    <td>
-                        ${item.status === 'bolos' 
-                            ? '<span class="badge badge-danger"><i class="fas fa-user-slash"></i> Bolos</span>' 
-                            : '<span class="badge badge-success"><i class="fas fa-check"></i> Hadir</span>'
-                        }
-                    </td>
+                    <td>${statusBadge}</td>
                     <td>
                         ${item.bolosTime 
                             ? `<span class="badge badge-danger"><i class="fas fa-clock"></i> ${item.bolosTime}</span>` 
@@ -2095,47 +2837,80 @@
                     </td>
                     <td>
                         <div style="display: flex; gap: 0.3rem;">
-                            ${item.status === 'hadir' 
-                                ? `<button class="btn-bolos" onclick="openBolosModal(${item.id})" title="Tandai Bolos">
-                                     <i class="fas fa-user-slash"></i>
-                                   </button>`
-                                : `<button class="btn-batal-bolos" onclick="batalBolos(${item.id})" title="Batal Bolos">
-                                     <i class="fas fa-undo"></i>
-                                   </button>`
-                            }
-                            <button class="btn-delete" onclick="deleteEntry(${item.id})" title="Hapus">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
+                            ${getActionButtons(item)}
                         </div>
                     </td>
                 </tr>
-            `).join('');
+            `}).join('');
+        }
+
+        function getStatusBadge(status) {
+            switch(status) {
+                case 'hadir':
+                    return '<span class="badge badge-success"><i class="fas fa-check"></i> Hadir</span>';
+                case 'bolos':
+                    return '<span class="badge badge-danger"><i class="fas fa-user-slash"></i> Bolos</span>';
+                case 'izin':
+                    return '<span class="badge badge-purple"><i class="fas fa-envelope"></i> Izin</span>';
+                case 'sakit':
+                    return '<span class="badge badge-orange"><i class="fas fa-notes-medical"></i> Sakit</span>';
+                default:
+                    return '<span class="badge badge-success"><i class="fas fa-check"></i> Hadir</span>';
+            }
+        }
+
+        function getActionButtons(item) {
+            let buttons = '';
+            
+            // Tombol ubah status untuk semua status
+            buttons += `<button class="btn-bolos" onclick="openStatusModal(${item.id})" title="Ubah Status" style="color: var(--primary);">
+                <i class="fas fa-exchange-alt"></i>
+            </button>`;
+            
+            // Tombol hapus
+            buttons += `<button class="btn-delete" onclick="deleteEntry(${item.id})" title="Hapus">
+                <i class="fas fa-trash-alt"></i>
+            </button>`;
+            
+            return buttons;
         }
 
         // Update Statistics
         function updateStats() {
+            if (!db) return;
+            
             const transaction = db.transaction(['attendance'], 'readonly');
             const store = transaction.objectStore('attendance');
             const index = store.index('date');
             const request = index.getAll(getTodayString());
             
             request.onsuccess = () => {
-                const data = request.result;
+                const data = request.result || [];
                 const hadirCount = data.filter(item => item.status === 'hadir').length;
                 const bolosCount = data.filter(item => item.status === 'bolos').length;
-                document.getElementById('totalStudents').textContent = `${hadirCount} (${bolosCount} bolos)`;
+                const izinCount = data.filter(item => item.status === 'izin').length;
+                const sakitCount = data.filter(item => item.status === 'sakit').length;
                 
-                if (data.length > 0) {
-                    const lastEntry = data[data.length - 1];
-                    document.getElementById('lastScan').textContent = lastEntry.time;
-                } else {
-                    document.getElementById('lastScan').textContent = '--:--';
+                const totalStudentsEl = document.getElementById('totalStudents');
+                const lastScanEl = document.getElementById('lastScan');
+                
+                if (totalStudentsEl) totalStudentsEl.textContent = `${hadirCount} H, ${bolosCount} B, ${izinCount} I, ${sakitCount} S`;
+                
+                // Find last entry with actual time
+                const entriesWithTime = data.filter(item => item.time && item.time !== '-');
+                if (entriesWithTime.length > 0 && lastScanEl) {
+                    const lastEntry = entriesWithTime[entriesWithTime.length - 1];
+                    lastScanEl.textContent = lastEntry.time;
+                } else if (lastScanEl) {
+                    lastScanEl.textContent = '--:--';
                 }
             };
         }
 
         // Delete Entry
         function deleteEntry(id) {
+            if (!db) return;
+            
             if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
                 const transaction = db.transaction(['attendance'], 'readwrite');
                 const store = transaction.objectStore('attendance');
@@ -2149,16 +2924,18 @@
         // Bolos Functions
         function openBolosModal(id) {
             currentBolosId = id;
-            document.getElementById('bolosModal').classList.add('active');
+            const modal = document.getElementById('bolosModal');
+            if (modal) modal.classList.add('active');
         }
 
         function closeBolosModal() {
-            document.getElementById('bolosModal').classList.remove('active');
+            const modal = document.getElementById('bolosModal');
+            if (modal) modal.classList.remove('active');
             currentBolosId = null;
         }
 
         function confirmBolos() {
-            if (!currentBolosId) return;
+            if (!currentBolosId || !db) return;
             
             const transaction = db.transaction(['attendance'], 'readwrite');
             const store = transaction.objectStore('attendance');
@@ -2180,45 +2957,191 @@
             };
         }
 
-        function batalBolos(id) {
-            if (!confirm('Batalkan status bolos? Siswa akan kembali ke status hadir.')) return;
+        // Status Change Functions
+        function openStatusModal(id) {
+            currentStatusId = id;
+            selectedNewStatus = null;
+            const modal = document.getElementById('statusModal');
+            
+            // Reset selection
+            document.querySelectorAll('.status-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            if (modal) modal.classList.add('active');
+        }
+
+        function closeStatusModal() {
+            const modal = document.getElementById('statusModal');
+            if (modal) modal.classList.remove('active');
+            currentStatusId = null;
+            selectedNewStatus = null;
+        }
+
+        function selectStatus(status) {
+            selectedNewStatus = status;
+            document.querySelectorAll('.status-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            const selectedOpt = document.querySelector(`.status-option.${status}`);
+            if (selectedOpt) selectedOpt.classList.add('selected');
+        }
+
+        function confirmStatusChange() {
+            if (!currentStatusId || !selectedNewStatus || !db) {
+                showToast('Pilih status terlebih dahulu!', 'error');
+                return;
+            }
             
             const transaction = db.transaction(['attendance'], 'readwrite');
             const store = transaction.objectStore('attendance');
-            const request = store.get(id);
+            const request = store.get(currentStatusId);
             
             request.onsuccess = () => {
                 const data = request.result;
                 if (data) {
-                    data.status = 'hadir';
-                    data.bolosTime = null;
+                    const oldStatus = data.status;
+                    data.status = selectedNewStatus;
+                    
+                    // Update time based on status
+                    if (selectedNewStatus === 'izin' || selectedNewStatus === 'sakit') {
+                        data.time = '-';
+                        data.bolosTime = null;
+                    } else if (selectedNewStatus === 'bolos') {
+                        data.bolosTime = new Date().toLocaleTimeString('id-ID');
+                    } else if (selectedNewStatus === 'hadir' && (oldStatus === 'izin' || oldStatus === 'sakit')) {
+                        // Jika dari izin/sakit menjadi hadir, beri waktu sekarang
+                        data.time = new Date().toLocaleTimeString('id-ID');
+                        data.bolosTime = null;
+                    }
                     
                     const updateRequest = store.put(data);
                     updateRequest.onsuccess = () => {
                         loadTodayData();
-                        showToast(`Status ${data.name} dikembalikan ke hadir`, 'success');
+                        showToast(`Status ${data.name} berhasil diubah menjadi ${selectedNewStatus}`, 'success');
+                        closeStatusModal();
                     };
                 }
             };
         }
 
-        // Export to Excel
-        function exportToExcel() {
+        // Quick Add Functions
+        function openQuickAddModal(status) {
+            currentQuickStatus = status;
+            const modal = document.getElementById('quickAddModal');
+            const titleSpan = document.getElementById('quickAddStatusTitle');
+            const statusInput = document.getElementById('quickStatus');
+            
+            if (titleSpan) {
+                const statusText = {
+                    'hadir': 'Hadir',
+                    'bolos': 'Bolos',
+                    'izin': 'Izin',
+                    'sakit': 'Sakit'
+                };
+                titleSpan.textContent = statusText[status] || status;
+            }
+            
+            if (statusInput) statusInput.value = status;
+            
+            if (modal) modal.classList.add('active');
+        }
+
+        function closeQuickAddModal() {
+            const modal = document.getElementById('quickAddModal');
+            const form = document.getElementById('quickAddForm');
+            
+            if (modal) modal.classList.remove('active');
+            if (form) form.reset();
+            currentQuickStatus = null;
+        }
+
+        function saveQuickAdd(e) {
+            e.preventDefault();
+            
+            const barcodeInput = document.getElementById('quickBarcode');
+            const nameInput = document.getElementById('quickName');
+            const classInput = document.getElementById('quickClass');
+            const majorInput = document.getElementById('quickMajor');
+            const statusInput = document.getElementById('quickStatus');
+            
+            if (!barcodeInput || !nameInput || !classInput || !majorInput || !statusInput) return;
+            
+            const barcode = barcodeInput.value.trim();
+            let name = nameInput.value.trim();
+            const studentClass = classInput.value;
+            const major = majorInput.value;
+            const status = statusInput.value;
+            
+            if (!barcode) {
+                showToast('Masukkan nomor barcode!', 'error');
+                return;
+            }
+            
+            // Cek database siswa
+            const student = studentDatabase[barcode];
+            if (student && !name) {
+                name = student.name;
+            }
+            
+            if (!name) {
+                showToast('Masukkan nama siswa!', 'error');
+                return;
+            }
+            
+            if (!db) return;
+            
+            // Check if already exists today
             const transaction = db.transaction(['attendance'], 'readonly');
             const store = transaction.objectStore('attendance');
             const index = store.index('date');
             const request = index.getAll(getTodayString());
             
             request.onsuccess = () => {
-                const data = request.result;
+                const todayData = request.result || [];
+                const existing = todayData.find(item => item.barcode === barcode);
+                
+                if (existing) {
+                    showToast('Siswa dengan barcode ini sudah ada hari ini!', 'error');
+                    return;
+                }
+                
+                addAttendance(barcode, name, studentClass, major, status);
+                closeQuickAddModal();
+                showToast(`Data berhasil ditambahkan dengan status ${status}!`, 'success');
+            };
+        }
+
+        // Export to Excel
+        function exportToExcel() {
+            if (!db) return;
+            
+            const transaction = db.transaction(['attendance'], 'readonly');
+            const store = transaction.objectStore('attendance');
+            const index = store.index('date');
+            const request = index.getAll(getTodayString());
+            
+            request.onsuccess = () => {
+                const data = request.result || [];
                 
                 if (data.length === 0) {
                     showToast('Tidak ada data untuk diekspor!', 'error');
                     return;
                 }
                 
-                // Prepare data for Excel
-                const excelData = data.map((item, index) => ({
+                // Pisahkan data: hadir/bolos di atas, izin/sakit di bawah
+                const hadirBolos = data.filter(item => item.status === 'hadir' || item.status === 'bolos');
+                const izinSakit = data.filter(item => item.status === 'izin' || item.status === 'sakit');
+                
+                // Sort hadir/bolos by timestamp
+                hadirBolos.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                
+                // Sort izin/sakit by timestamp
+                izinSakit.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                
+                // Prepare data for Excel - HADIR/BOLOS (lengkap)
+                const excelDataHadirBolos = hadirBolos.map((item, index) => ({
                     'No': index + 1,
                     'Nama_Siswa': item.name,
                     'Kelas': item.class,
@@ -2230,8 +3153,24 @@
                     'Barcode': item.barcode
                 }));
                 
+                // Prepare data for Excel - IZIN/SAKIT (longkap 1 field - tanpa Waktu_Hadir)
+                const excelDataIzinSakit = izinSakit.map((item, index) => ({
+                    'No': hadirBolos.length + index + 1,
+                    'Nama_Siswa': item.name,
+                    'Kelas': item.class,
+                    'Jurusan': item.major,
+                    'Tanggal': item.date,
+                    'Waktu_Hadir': '', // DIKOSONGKAN (longkap 1 field)
+                    'Status': item.status === 'izin' ? 'IZIN' : 'SAKIT',
+                    'Waktu_Bolos': '-',
+                    'Barcode': item.barcode
+                }));
+                
+                // Gabungkan data
+                const allData = [...excelDataHadirBolos, ...excelDataIzinSakit];
+                
                 // Create worksheet
-                const ws = XLSX.utils.json_to_sheet(excelData);
+                const ws = XLSX.utils.json_to_sheet(allData);
                 
                 // Set column widths
                 ws['!cols'] = [
@@ -2262,6 +3201,8 @@
 
         // Clear All Data
         function clearAllData() {
+            if (!db) return;
+            
             if (confirm('PERINGATAN: Ini akan menghapus SEMUA data absensi hari ini! Lanjutkan?')) {
                 const transaction = db.transaction(['attendance'], 'readwrite');
                 const store = transaction.objectStore('attendance');
@@ -2284,14 +3225,16 @@
         // Load Sample Data
         function loadSampleData() {
             const samples = [
-                { barcode: 'RPL1009', name: 'Kania Putri Dewi', class: 'XII', major: 'RPL' },
-                { barcode: 'RPL2013', name: 'Padli Nurramadhan', class: 'XII', major: 'RPL' }
+                { barcode: 'RPL1009', name: 'Kania Putri Dewi', class: 'XII', major: 'RPL', status: 'hadir' },
+                { barcode: 'RPL2013', name: 'Padli Nurramadhan', class: 'XII', major: 'RPL', status: 'hadir' },
+                { barcode: 'RPL1001', name: 'Ade Pajriah', class: 'XII', major: 'RPL', status: 'izin' },
+                { barcode: 'RPL2001', name: 'Ade Amelia Rizkiyah', class: 'XII', major: 'RPL', status: 'sakit' }
             ];
             
             let added = 0;
             samples.forEach((student, index) => {
                 setTimeout(() => {
-                    addAttendance(student.barcode, student.name, student.class, student.major);
+                    addAttendance(student.barcode, student.name, student.class, student.major, student.status);
                     added++;
                     if (added === samples.length) {
                         showToast('Data sample berhasil dimuat!', 'success');
@@ -2302,21 +3245,36 @@
 
         // Modal Functions
         function openModal() {
-            document.getElementById('addModal').classList.add('active');
+            const modal = document.getElementById('addModal');
+            if (modal) modal.classList.add('active');
         }
 
         function closeModal() {
-            document.getElementById('addModal').classList.remove('active');
-            document.getElementById('addForm').reset();
+            const modal = document.getElementById('addModal');
+            const form = document.getElementById('addForm');
+            
+            if (modal) modal.classList.remove('active');
+            if (form) form.reset();
         }
 
         function saveManualEntry(e) {
             e.preventDefault();
             
-            const barcode = document.getElementById('modalBarcode').value;
-            const name = document.getElementById('modalName').value;
-            const studentClass = document.getElementById('modalClass').value;
-            const major = document.getElementById('modalMajor').value;
+            const barcodeInput = document.getElementById('modalBarcode');
+            const nameInput = document.getElementById('modalName');
+            const classInput = document.getElementById('modalClass');
+            const majorInput = document.getElementById('modalMajor');
+            const statusInput = document.getElementById('modalStatus');
+            
+            if (!barcodeInput || !nameInput || !classInput || !majorInput || !statusInput) return;
+            
+            const barcode = barcodeInput.value;
+            const name = nameInput.value;
+            const studentClass = classInput.value;
+            const major = majorInput.value;
+            const status = statusInput.value;
+            
+            if (!db) return;
             
             // Check if already exists today
             const transaction = db.transaction(['attendance'], 'readonly');
@@ -2325,7 +3283,7 @@
             const request = index.getAll(getTodayString());
             
             request.onsuccess = () => {
-                const todayData = request.result;
+                const todayData = request.result || [];
                 const existing = todayData.find(item => item.barcode === barcode);
                 
                 if (existing) {
@@ -2333,7 +3291,7 @@
                     return;
                 }
                 
-                addAttendance(barcode, name, studentClass, major);
+                addAttendance(barcode, name, studentClass, major, status);
                 closeModal();
                 showToast('Data berhasil ditambahkan!', 'success');
             };
@@ -2342,6 +3300,8 @@
         // Toast Notification
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
+            if (!container) return;
+            
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
             
@@ -2361,14 +3321,21 @@
             setTimeout(() => {
                 toast.style.opacity = '0';
                 toast.style.transform = 'translateX(100%)';
-                setTimeout(() => toast.remove(), 300);
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
             }, 3000);
         }
 
         // Play Beep Sound
         function playBeep() {
             try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                
+                const audioContext = new AudioContext();
                 const oscillator = audioContext.createOscillator();
                 const gainNode = audioContext.createGain();
                 
@@ -2393,15 +3360,16 @@
             const modal = document.getElementById('addModal');
             const bolosModal = document.getElementById('bolosModal');
             const profileModal = document.getElementById('profileModal');
-            if (event.target === modal) {
-                closeModal();
-            }
-            if (event.target === bolosModal) {
-                closeBolosModal();
-            }
-            if (event.target === profileModal) {
-                closeProfileModal();
-            }
+            const guideModal = document.getElementById('guideModal');
+            const quickAddModal = document.getElementById('quickAddModal');
+            const statusModal = document.getElementById('statusModal');
+            
+            if (event.target === modal) closeModal();
+            if (event.target === bolosModal) closeBolosModal();
+            if (event.target === profileModal) closeProfileModal();
+            if (event.target === guideModal) closeGuideModal();
+            if (event.target === quickAddModal) closeQuickAddModal();
+            if (event.target === statusModal) closeStatusModal();
         }
 
         // ==================== BARCODE GENERATOR FUNCTIONS ====================
@@ -2411,16 +3379,26 @@
             document.querySelectorAll('.format-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
+            
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            
             previewBarcode();
         }
 
         function previewBarcode() {
-            const barcode = document.getElementById('genBarcode').value;
-            const name = document.getElementById('genName').value;
+            const barcodeInput = document.getElementById('genBarcode');
+            const nameInput = document.getElementById('genName');
+            const previewContainer = document.getElementById('previewContainer');
+            
+            if (!barcodeInput || !previewContainer) return;
+            
+            const barcode = barcodeInput.value;
+            const name = nameInput ? nameInput.value : '';
             
             if (!barcode) {
-                document.getElementById('previewContainer').innerHTML = `
+                previewContainer.innerHTML = `
                     <i class="fas fa-barcode" style="font-size: 4rem; color: var(--gray-200);"></i>
                     <p style="color: #94a3b8; margin-top: 1rem;">Masukkan data untuk generate barcode</p>
                 `;
@@ -2439,7 +3417,6 @@
                     margin: 10
                 });
                 
-                const previewContainer = document.getElementById('previewContainer');
                 previewContainer.innerHTML = '';
                 
                 const wrapper = document.createElement('div');
@@ -2462,10 +3439,17 @@
         }
 
         function generateBarcode() {
-            const barcode = document.getElementById('genBarcode').value;
-            const name = document.getElementById('genName').value;
-            const studentClass = document.getElementById('genClass').value;
-            const major = document.getElementById('genMajor').value;
+            const barcodeInput = document.getElementById('genBarcode');
+            const nameInput = document.getElementById('genName');
+            const classInput = document.getElementById('genClass');
+            const majorInput = document.getElementById('genMajor');
+            
+            if (!barcodeInput) return;
+            
+            const barcode = barcodeInput.value;
+            const name = nameInput ? nameInput.value : '';
+            const studentClass = classInput ? classInput.value : 'XII';
+            const major = majorInput ? majorInput.value : 'RPL';
             
             if (!barcode) {
                 showToast('Masukkan nomor barcode!', 'error');
@@ -2493,14 +3477,16 @@
             showToast('Barcode berhasil digenerate!', 'success');
             
             // Clear inputs
-            document.getElementById('genBarcode').value = '';
-            document.getElementById('genName').value = '';
+            barcodeInput.value = '';
+            if (nameInput) nameInput.value = '';
             previewBarcode();
         }
 
         function updateGeneratedList() {
             const listContainer = document.getElementById('generatedList');
             const countSpan = document.getElementById('generatedCount');
+            
+            if (!listContainer || !countSpan) return;
             
             countSpan.textContent = generatedBarcodes.length;
             
@@ -2533,6 +3519,8 @@
         }
 
         function removeGenerated(index) {
+            if (index < 0 || index >= generatedBarcodes.length) return;
+            
             generatedBarcodes.splice(index, 1);
             updateGeneratedList();
             showToast('Barcode dihapus dari daftar', 'success');
@@ -2540,6 +3528,7 @@
 
         function clearGenerated() {
             if (generatedBarcodes.length === 0) return;
+            
             if (confirm('Hapus semua barcode yang sudah digenerate?')) {
                 generatedBarcodes = [];
                 updateGeneratedList();
@@ -2548,8 +3537,13 @@
         }
 
         function downloadBarcode() {
-            const barcode = document.getElementById('genBarcode').value || 'barcode';
-            const canvas = document.querySelector('#previewContainer canvas');
+            const barcodeInput = document.getElementById('genBarcode');
+            const previewContainer = document.getElementById('previewContainer');
+            
+            if (!barcodeInput || !previewContainer) return;
+            
+            const barcode = barcodeInput.value || 'barcode';
+            const canvas = previewContainer.querySelector('canvas');
             
             if (!canvas) {
                 showToast('Generate barcode terlebih dahulu!', 'error');
@@ -2565,6 +3559,8 @@
         }
 
         function downloadSingleBarcode(index) {
+            if (index < 0 || index >= generatedBarcodes.length) return;
+            
             const item = generatedBarcodes[index];
             const canvas = document.createElement('canvas');
             
@@ -2587,13 +3583,23 @@
         }
 
         function printBarcode() {
-            const canvas = document.querySelector('#previewContainer canvas');
+            const previewContainer = document.getElementById('previewContainer');
+            const nameInput = document.getElementById('genName');
+            
+            if (!previewContainer) return;
+            
+            const canvas = previewContainer.querySelector('canvas');
             if (!canvas) {
                 showToast('Generate barcode terlebih dahulu!', 'error');
                 return;
             }
             
             const printWindow = window.open('', '_blank');
+            if (!printWindow) {
+                showToast('Popup blocker mencegah membuka window print', 'error');
+                return;
+            }
+            
             printWindow.document.write(`
                 <html>
                 <head>
@@ -2619,10 +3625,14 @@
                 <body>
                     <div class="container">
                         <img src="${canvas.toDataURL()}" />
-                        <div class="name">${document.getElementById('genName').value || ''}</div>
+                        <div class="name">${nameInput ? nameInput.value : ''}</div>
                     </div>
                     <script>
-                        window.onload = function() { window.print(); }
+                        window.onload = function() { 
+                            setTimeout(function() {
+                                window.print();
+                            }, 100);
+                        }
                     <\/script>
                 </body>
                 </html>
@@ -2658,7 +3668,6 @@
                 return;
             }
             
-            // Create a ZIP-like experience by downloading one by one with delay
             showToast(`Mengunduh ${generatedBarcodes.length} barcode...`, 'success');
             
             generatedBarcodes.forEach((item, index) => {
