@@ -3,11 +3,55 @@
 # 📋 Sistem Absensi Digital Siswa 12 RPL
 
 ![Version](https://img.shields.io/badge/version-2.0-blue)
-<p align="center">
-  <img src="https://raw.githubusercontent.com/padlinurramadan-ui/Website-Absensi/main/flowchart.jpg" alt="Flowchart" width="800"/>
-  <br>
-  <em>Gambar 1: Flowchart Alur Kerja Sistem Absensi</em>
-</p>
+![License](https://img.shields.io/badge/license-MIT-green)
+![Status](https://img.shields.io/badge/status-active-success)
+
+Sistem absensi modern berbasis barcode scanner dengan fitur lengkap untuk kelas 12 RPL. Dibangun menggunakan HTML5, CSS3, dan JavaScript dengan database IndexedDB untuk penyimpanan lokal.
+
+---
+
+## 📑 Daftar Isi
+
+- [Fitur Utama](#-fitur-utama)
+- [Teknologi](#-teknologi)
+- [Instalasi](#-instalasi)
+- [Cara Penggunaan](#-cara-penggunaan)
+  - [Menu Absensi](#1-menu-absensi)
+  - [Menu Generator Barcode](#2-menu-generator-barcode)
+  - [Menu Guide](#3-menu-guide)
+- [Status Kehadiran](#-status-kehadiran)
+- [Export Excel](#-export-excel)
+- [Database Siswa](#-database-siswa)
+- [Troubleshooting](#-troubleshooting)
+- [Pengembang](#-pengembang)
+
+---
+
+## ✨ Fitur Utama
+
+| Fitur | Deskripsi |
+|-------|-----------|
+| 📷 **Barcode Scanner** | Scan barcode real-time menggunakan kamera device |
+| ⌨️ **Input Manual** | Input barcode manual dengan validasi otomatis |
+| 🎨 **4 Status Absensi** | Hadir, Bolos, Izin, dan Sakit dengan warna berbeda |
+| 📊 **Export Excel** | Export data dengan format terstruktir (Izin/Sakit dipisah di bawah) |
+| 🏷️ **Generator Barcode** | Buat dan download barcode untuk setiap siswa |
+| 📱 **Responsive Design** | Tampilan optimal di desktop, tablet, dan mobile |
+| 💾 **IndexedDB** | Penyimpanan lokal yang persisten dan cepat |
+| 🔍 **Guide/Directory** | Daftar lengkap siswa dengan fitur pencarian dan copy kode |
+
+---
+
+## 🛠️ Teknologi
+
+- **Frontend**: HTML5, CSS3 (CSS Variables, Flexbox, Grid), JavaScript (ES6+)
+- **Library**:
+  - [html5-qrcode](https://github.com/mebjas/html5-qrcode) - Barcode/QR Scanner
+  - [SheetJS/xlsx](https://github.com/SheetJS/sheetjs) - Export Excel
+  - [JsBarcode](https://github.com/lindell/JsBarcode) - Generator Barcode
+  - [Font Awesome](https://fontawesome.com/) - Icon
+- **Database**: IndexedDB (Browser Native)
+- **Storage**: LocalStorage (untuk data berita jika ada)
 
 ---
 
@@ -24,6 +68,7 @@
    ```bash
    git clone https://github.com/username/absensi-12rpl.git
    # atau download ZIP manual
+
    ```
 
 2. Struktur Folder
