@@ -13,6 +13,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         * {
@@ -2103,6 +2105,383 @@
             opacity: 0;
             pointer-events: none;
         }
+
+        /* ============================================
+           NEW FEATURE STYLES
+           ============================================ */
+
+        /* Push Notification Permission Button */
+        .notification-btn {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(30, 64, 175, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            z-index: 2500;
+            transition: all 0.3s ease;
+        }
+
+        .notification-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(30, 64, 175, 0.4);
+        }
+
+        .notification-btn.denied {
+            background: var(--danger);
+        }
+
+        .notification-btn.granted {
+            background: var(--success);
+        }
+
+        /* Analytics Dashboard Styles */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .analytics-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .analytics-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 1rem;
+        }
+
+        .heatmap-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+            gap: 4px;
+            margin-top: 1rem;
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.2);
+            z-index: 10;
+        }
+
+        .heatmap-legend {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .heatmap-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .heatmap-legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .risk-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .risk-high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .risk-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .risk-low {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        /* Backup & Restore Styles */
+        .backup-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        .backup-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .backup-card {
+            border: 2px solid var(--gray-200);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .backup-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(30, 64, 175, 0.1);
+        }
+
+        .backup-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .backup-icon.export {
+            background: linear-gradient(135deg, var(--success), #059669);
+        }
+
+        .backup-icon.import {
+            background: linear-gradient(135deg, var(--info), #1d4ed8);
+        }
+
+        .backup-icon.encrypt {
+            background: linear-gradient(135deg, var(--purple), #7c3aed);
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 1rem;
+            background: var(--gray-50);
+            border: 2px dashed var(--gray-300);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .file-input-label:hover {
+            background: var(--gray-100);
+            border-color: var(--primary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .progress-bar.active {
+            display: block;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        /* Install PWA Button */
+        .install-pwa-btn {
+            position: fixed;
+            bottom: 140px;
+            right: 20px;
+            padding: 0.8rem 1.2rem;
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 2500;
+            animation: slideInRight 0.3s ease;
+        }
+
+        .install-pwa-btn.show {
+            display: flex;
+        }
+
+        .install-pwa-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Offline Indicator */
+        .offline-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: var(--warning);
+            color: white;
+            text-align: center;
+            padding: 0.5rem;
+            font-weight: 600;
+            z-index: 4000;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .offline-indicator.show {
+            transform: translateY(0);
+        }
+
+        /* Sync Queue Indicator */
+        .sync-queue-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        /* Analytics Summary Cards */
+        .analytics-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .analytics-summary-item {
+            background: var(--gray-50);
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .analytics-summary-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .analytics-summary-label {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 0.3rem;
+        }
+
+        /* Prediction Card */
+        .prediction-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .prediction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .prediction-item:last-child {
+            border-bottom: none;
+        }
+
+        .prediction-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .prediction-name {
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .prediction-detail {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        /* Responsive adjustments for new features */
+        @media (max-width: 768px) {
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .backup-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .heatmap-container {
+                grid-template-columns: repeat(7, 1fr);
+            }
+        }
     </style>
 </head>
 <body>
@@ -2174,6 +2553,21 @@
             <i class="fas fa-circle"></i>
             <span>Menghubungkan...</span>
         </div>
+
+        <!-- Offline Indicator -->
+        <div id="offlineIndicator" class="offline-indicator">
+            <i class="fas fa-wifi-slash"></i> Anda sedang offline. Data akan disimpan secara lokal dan disinkronkan saat online.
+        </div>
+
+        <!-- Push Notification Button -->
+        <button id="notificationBtn" class="notification-btn" onclick="requestNotificationPermission()" title="Aktifkan Notifikasi">
+            <i class="fas fa-bell-slash"></i>
+        </button>
+
+        <!-- Install PWA Button -->
+        <button id="installPwaBtn" class="install-pwa-btn" onclick="installPWA()">
+            <i class="fas fa-download"></i> Install App
+        </button>
 
         <!-- Profile Modal -->
         <div class="profile-modal" id="profileModal">
@@ -2330,11 +2724,17 @@
                 <button class="nav-tab active" onclick="switchTab('absensi')" id="tab-absensi">
                     <i class="fas fa-clipboard-check"></i> Absensi
                 </button>
+                <button class="nav-tab" onclick="switchTab('analytics')" id="tab-analytics">
+                    <i class="fas fa-chart-line"></i> Analytics
+                </button>
                 <button class="nav-tab" onclick="switchTab('rekap')" id="tab-rekap">
                     <i class="fas fa-chart-bar"></i> Rekap Bulanan
                 </button>
                 <button class="nav-tab" onclick="switchTab('riwayat')" id="tab-riwayat">
                     <i class="fas fa-history"></i> Riwayat Siswa
+                </button>
+                <button class="nav-tab" onclick="switchTab('backup')" id="tab-backup">
+                    <i class="fas fa-database"></i> Backup
                 </button>
                 <button class="nav-tab" onclick="switchTab('generator')" id="tab-generator">
                     <i class="fas fa-barcode"></i> Generator Barcode
@@ -2526,6 +2926,221 @@
                                         <td colspan="8">
                                             <i class="fas fa-inbox"></i>
                                             <p>Belum ada data absensi</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB ANALYTICS - ADMIN ONLY -->
+            <div id="content-analytics" class="tab-content hidden">
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-chart-line"></i>
+                            Dashboard Analytics
+                        </h2>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <select id="analyticsRange" class="btn btn-secondary" onchange="loadAnalytics()">
+                                <option value="7">7 Hari Terakhir</option>
+                                <option value="30">30 Hari Terakhir</option>
+                                <option value="90">3 Bulan Terakhir</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="loadAnalytics()">
+                                <i class="fas fa-sync"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="analytics-summary" id="analyticsSummary">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+
+                <div class="analytics-grid">
+                    <!-- Attendance Trend Chart -->
+                    <div class="analytics-card">
+                        <div class="card-header" style="border-bottom: none; padding-bottom: 0;">
+                            <h3 class="card-title" style="font-size: 1.1rem;">
+                                <i class="fas fa-chart-area"></i> Tren Kehadiran
+                            </h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="attendanceTrendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Status Distribution Chart -->
+                    <div class="analytics-card">
+                        <div class="card-header" style="border-bottom: none; padding-bottom: 0;">
+                            <h3 class="card-title" style="font-size: 1.1rem;">
+                                <i class="fas fa-chart-pie"></i> Distribusi Status
+                            </h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="statusDistributionChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Heatmap -->
+                    <div class="analytics-card full-width">
+                        <div class="card-header" style="border-bottom: none; padding-bottom: 0;">
+                            <h3 class="card-title" style="font-size: 1.1rem;">
+                                <i class="fas fa-th"></i> Heatmap Kehadiran
+                            </h3>
+                        </div>
+                        <div class="heatmap-container" id="attendanceHeatmap">
+                            <!-- Generated by JS -->
+                        </div>
+                        <div class="heatmap-legend">
+                            <div class="heatmap-legend-item">
+                                <div class="heatmap-legend-color" style="background: #fee2e2;"></div>
+                                <span>Bolos (>50%)</span>
+                            </div>
+                            <div class="heatmap-legend-item">
+                                <div class="heatmap-legend-color" style="background: #fef3c7;"></div>
+                                <span>Risk (25-50%)</span>
+                            </div>
+                            <div class="heatmap-legend-item">
+                                <div class="heatmap-legend-color" style="background: #d1fae5;"></div>
+                                <span>Good (75-100%)</span>
+                            </div>
+                            <div class="heatmap-legend-item">
+                                <div class="heatmap-legend-color" style="background: #10b981;"></div>
+                                <span>Excellent (100%)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Risk Prediction -->
+                    <div class="analytics-card full-width">
+                        <div class="card-header" style="border-bottom: none; padding-bottom: 0;">
+                            <h3 class="card-title" style="font-size: 1.1rem;">
+                                <i class="fas fa-exclamation-triangle"></i> Prediksi Siswa Berisiko
+                            </h3>
+                        </div>
+                        <div class="prediction-list" id="riskPredictionList">
+                            <!-- Generated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB BACKUP & RESTORE - ADMIN ONLY -->
+            <div id="content-backup" class="tab-content hidden">
+                <div class="backup-section">
+                    <div class="card-header" style="border-bottom: 2px solid var(--gray-100); margin-bottom: 0;">
+                        <h2 class="card-title">
+                            <i class="fas fa-database"></i>
+                            Backup & Restore Database
+                        </h2>
+                    </div>
+                    <p style="color: #64748b; margin-top: 0.5rem;">
+                        Kelola data absensi dengan fitur backup lengkap dengan enkripsi dan restore data.
+                    </p>
+
+                    <div class="backup-grid">
+                        <!-- Export Backup -->
+                        <div class="backup-card">
+                            <div class="backup-icon export">
+                                <i class="fas fa-file-export"></i>
+                            </div>
+                            <h3 style="margin-bottom: 0.5rem; color: var(--primary-dark);">Export Database</h3>
+                            <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 1rem;">
+                                Export seluruh data absensi ke file JSON terenkripsi.
+                            </p>
+                            <div class="form-group" style="text-align: left;">
+                                <label>Password Enkripsi (opsional)</label>
+                                <input type="password" id="backupPassword" placeholder="Masukkan password untuk enkripsi">
+                            </div>
+                            <button class="btn btn-success" onclick="exportDatabase()" style="width: 100%; margin-top: 1rem;">
+                                <i class="fas fa-download"></i> Download Backup
+                            </button>
+                            <div class="progress-bar" id="exportProgress">
+                                <div class="progress-fill" id="exportProgressFill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Import Backup -->
+                        <div class="backup-card">
+                            <div class="backup-icon import">
+                                <i class="fas fa-file-import"></i>
+                            </div>
+                            <h3 style="margin-bottom: 0.5rem; color: var(--primary-dark);">Import Database</h3>
+                            <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 1rem;">
+                                Restore data dari file backup JSON.
+                            </p>
+                            <div class="form-group" style="text-align: left;">
+                                <label>Password Dekripsi (jika ada)</label>
+                                <input type="password" id="restorePassword" placeholder="Masukkan password jika file terenkripsi">
+                            </div>
+                            <div class="file-input-wrapper" style="margin-top: 1rem;">
+                                <input type="file" id="backupFileInput" accept=".json,.enc" onchange="handleBackupFileSelect(event)">
+                                <label for="backupFileInput" class="file-input-label" id="backupFileLabel">
+                                    <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem; display: block;"></i>
+                                    <span id="backupFileText">Klik untuk pilih file backup</span>
+                                </label>
+                            </div>
+                            <button class="btn btn-primary" onclick="importDatabase()" style="width: 100%; margin-top: 1rem;">
+                                <i class="fas fa-upload"></i> Restore Data
+                            </button>
+                            <div class="progress-bar" id="importProgress">
+                                <div class="progress-fill" id="importProgressFill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Auto Backup Settings -->
+                        <div class="backup-card">
+                            <div class="backup-icon encrypt">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3 style="margin-bottom: 0.5rem; color: var(--primary-dark);">Auto Backup</h3>
+                            <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 1rem;">
+                                Backup otomatis ke local storage setiap hari.
+                            </p>
+                            <div style="text-align: left; margin-bottom: 1rem;">
+                                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                    <input type="checkbox" id="autoBackupEnabled" onchange="toggleAutoBackup()">
+                                    <span>Aktifkan Auto Backup</span>
+                                </label>
+                            </div>
+                            <div id="lastBackupInfo" style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">
+                                Backup terakhir: <span id="lastBackupDate">-</span>
+                            </div>
+                            <button class="btn btn-secondary" onclick="backupToLocalStorage()" style="width: 100%;">
+                                <i class="fas fa-save"></i> Backup Sekarang
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Backup History -->
+                    <div class="card" style="margin-top: 2rem;">
+                        <div class="card-header">
+                            <h3 class="card-title" style="font-size: 1.1rem;">
+                                <i class="fas fa-history"></i> Riwayat Backup
+                            </h3>
+                            <button class="btn btn-danger btn-small" onclick="clearBackupHistory()">
+                                <i class="fas fa-trash"></i> Hapus Riwayat
+                            </button>
+                        </div>
+                        <div class="table-container">
+                            <table id="backupHistoryTable">
+                                <thead>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>Ukuran</th>
+                                        <th>Tipe</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="backupHistoryBody">
+                                    <tr class="empty-state">
+                                        <td colspan="4">
+                                            <i class="fas fa-inbox"></i>
+                                            <p>Belum ada riwayat backup</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -2943,7 +3558,7 @@
         let firebaseApp;
         let firebaseDB;
         const DB_NAME = 'AbsensiDB';
-        const DB_VERSION = 5; // Upgraded for Firebase sync
+        const DB_VERSION = 7; // Upgraded for backup & analytics features
         let html5QrCode;
         let isScanning = false;
         let currentDate = new Date();
@@ -2958,6 +3573,12 @@
         let currentStudentBarcode = null;
         let isOnline = false;
         let syncListener = null;
+        let lastCheckedDate = null;
+        let deferredPrompt = null; // For PWA install
+
+        // Chart instances
+        let attendanceTrendChart = null;
+        let statusDistributionChart = null;
 
         // Admin credentials
         const ADMIN_USERS = [
@@ -3037,24 +3658,1032 @@
             initDB();
             initFirebase(); // Inisialisasi Firebase
             updateDateDisplay();
+            initPWA(); // Initialize PWA features
             
             const now = new Date();
             document.getElementById('rekapBulan').value = now.getMonth();
             document.getElementById('rekapTahun').value = now.getFullYear();
             
             initGuide();
+            loadBackupHistory();
+            checkNotificationPermission();
             
-            // Update date every minute
-            setInterval(() => {
-                const now = new Date();
-                if (now.getDate() !== currentDate.getDate()) {
-                    currentDate = now;
-                    updateDateDisplay();
-                    loadTodayData();
-                    showToast('Hari baru! Data absensi direset untuk tanggal baru.', 'warning');
+            // Check date change every minute
+            setInterval(checkDateChange, 60000);
+            
+            // Also check when window becomes visible
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    checkDateChange();
                 }
-            }, 60000);
+            });
+
+            // Handle online/offline events
+            window.addEventListener('online', handleOnline);
+            window.addEventListener('offline', handleOffline);
         });
+
+        // ============================================
+        // PWA & SERVICE WORKER FUNCTIONS
+        // ============================================
+
+        function initPWA() {
+            // Register Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('data:text/javascript;base64,' + btoa(`
+                    const CACHE_NAME = 'absensi-cache-v1';
+                    const urlsToCache = [
+                        '/',
+                        '/index.html'
+                    ];
+
+                    self.addEventListener('install', event => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME)
+                                .then(cache => cache.addAll(urlsToCache))
+                        );
+                        self.skipWaiting();
+                    });
+
+                    self.addEventListener('fetch', event => {
+                        event.respondWith(
+                            caches.match(event.request)
+                                .then(response => {
+                                    if (response) {
+                                        return response;
+                                    }
+                                    return fetch(event.request)
+                                        .then(response => {
+                                            if(!response || response.status !== 200 || response.type !== 'basic') {
+                                                return response;
+                                            }
+                                            const responseToCache = response.clone();
+                                            caches.open(CACHE_NAME)
+                                                .then(cache => {
+                                                    cache.put(event.request, responseToCache);
+                                                });
+                                            return response;
+                                        });
+                                })
+                                .catch(() => {
+                                    // Return offline fallback if available
+                                    if (event.request.mode === 'navigate') {
+                                        return caches.match('/index.html');
+                                    }
+                                })
+                        );
+                    });
+
+                    self.addEventListener('sync', event => {
+                        if (event.tag === 'sync-attendance') {
+                            event.waitUntil(syncAttendanceData());
+                        }
+                    });
+
+                    self.addEventListener('push', event => {
+                        const data = event.data.json();
+                        const options = {
+                            body: data.body,
+                            icon: 'https://cdn-icons-png.flaticon.com/512/2922/2922506.png',
+                            badge: 'https://cdn-icons-png.flaticon.com/512/2922/2922506.png',
+                            vibrate: [100, 50, 100],
+                            data: data.data || {},
+                            actions: data.actions || []
+                        };
+                        event.waitUntil(
+                            self.registration.showNotification(data.title, options)
+                        );
+                    });
+
+                    async function syncAttendanceData() {
+                        // Background sync logic handled by main app
+                        console.log('Background sync triggered');
+                    }
+                `)).then(registration => {
+                    console.log('ServiceWorker registered:', registration);
+                }).catch(error => {
+                    console.log('ServiceWorker registration failed:', error);
+                });
+            }
+
+            // Handle beforeinstallprompt
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                document.getElementById('installPwaBtn').classList.add('show');
+            });
+
+            // Check if already installed
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                document.getElementById('installPwaBtn').style.display = 'none';
+            }
+        }
+
+        function installPWA() {
+            if (!deferredPrompt) return;
+            
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    showToast('Aplikasi berhasil diinstall!', 'success');
+                    document.getElementById('installPwaBtn').classList.remove('show');
+                }
+                deferredPrompt = null;
+            });
+        }
+
+        function handleOnline() {
+            isOnline = true;
+            document.getElementById('offlineIndicator').classList.remove('show');
+            updateConnectionStatus('connected', 'Kembali online');
+            document.getElementById('syncText').textContent = 'Online';
+            document.getElementById('syncStatus').className = 'sync-status online';
+            
+            // Sync data
+            syncLocalToFirebase();
+            showToast('Koneksi internet tersambung. Menyinkronkan data...', 'success');
+            
+            // Send push notification
+            sendPushNotification('Koneksi Tersambung', 'Aplikasi kembali online. Data akan disinkronkan otomatis.');
+        }
+
+        function handleOffline() {
+            isOnline = false;
+            document.getElementById('offlineIndicator').classList.add('show');
+            updateConnectionStatus('disconnected', 'Offline - Mode lokal');
+            document.getElementById('syncText').textContent = 'Offline';
+            document.getElementById('syncStatus').className = 'sync-status offline';
+            showToast('Anda sedang offline. Data disimpan secara lokal.', 'warning');
+        }
+
+        // ============================================
+        // PUSH NOTIFICATION FUNCTIONS
+        // ============================================
+
+        function checkNotificationPermission() {
+            if (!('Notification' in window)) {
+                document.getElementById('notificationBtn').style.display = 'none';
+                return;
+            }
+
+            const btn = document.getElementById('notificationBtn');
+            if (Notification.permission === 'granted') {
+                btn.classList.add('granted');
+                btn.innerHTML = '<i class="fas fa-bell"></i>';
+                btn.title = 'Notifikasi Aktif';
+            } else if (Notification.permission === 'denied') {
+                btn.classList.add('denied');
+                btn.innerHTML = '<i class="fas fa-bell-slash"></i>';
+                btn.title = 'Notifikasi Ditolak';
+            }
+        }
+
+        function requestNotificationPermission() {
+            if (!('Notification' in window)) {
+                showToast('Browser tidak mendukung notifikasi', 'error');
+                return;
+            }
+
+            Notification.requestPermission().then(permission => {
+                const btn = document.getElementById('notificationBtn');
+                if (permission === 'granted') {
+                    btn.classList.remove('denied');
+                    btn.classList.add('granted');
+                    btn.innerHTML = '<i class="fas fa-bell"></i>';
+                    btn.title = 'Notifikasi Aktif';
+                    showToast('Notifikasi berhasil diaktifkan!', 'success');
+                    
+                    // Subscribe to push notifications
+                    subscribeToPushNotifications();
+                } else {
+                    btn.classList.add('denied');
+                    btn.innerHTML = '<i class="fas fa-bell-slash"></i>';
+                    btn.title = 'Notifikasi Ditolak';
+                    showToast('Izin notifikasi ditolak', 'error');
+                }
+            });
+        }
+
+        function subscribeToPushNotifications() {
+            if ('serviceWorker' in navigator && 'PushManager' in window) {
+                navigator.serviceWorker.ready.then(registration => {
+                    // In real implementation, you would subscribe to push service here
+                    console.log('Push notification subscription ready');
+                });
+            }
+        }
+
+        function sendPushNotification(title, body, data = {}) {
+            if (Notification.permission === 'granted') {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification(title, {
+                        body: body,
+                        icon: 'https://cdn-icons-png.flaticon.com/512/2922/2922506.png',
+                        badge: 'https://cdn-icons-png.flaticon.com/512/2922/2922506.png',
+                        vibrate: [100, 50, 100],
+                        data: data,
+                        requireInteraction: true,
+                        actions: [
+                            { action: 'open', title: 'Buka Aplikasi' },
+                            { action: 'close', title: 'Tutup' }
+                        ]
+                    });
+                });
+            }
+        }
+
+        // ============================================
+        // DATE CHANGE & AUTO SAVE HISTORY
+        // ============================================
+
+        function checkDateChange() {
+            const now = new Date();
+            const todayStr = now.toISOString().split('T')[0];
+            
+            // Get last processed date from localStorage
+            const lastDate = localStorage.getItem('lastProcessedDate');
+            
+            if (lastDate && lastDate !== todayStr) {
+                // Date has changed - save yesterday's data to history
+                saveCurrentDataToHistory(lastDate);
+            }
+            
+            // Update current date display if changed
+            if (now.getDate() !== currentDate.getDate() || 
+                now.getMonth() !== currentDate.getMonth() || 
+                now.getFullYear() !== currentDate.getFullYear()) {
+                currentDate = now;
+                updateDateDisplay();
+                loadTodayData();
+                showToast('Hari baru! Data absensi direset untuk tanggal baru.', 'warning');
+                
+                // Send push notification for new day
+                sendPushNotification('Hari Baru', 'Data absensi telah direset untuk hari ini. Jangan lupa cek kehadiran siswa!');
+            }
+            
+            // Save current date as last processed
+            localStorage.setItem('lastProcessedDate', todayStr);
+        }
+
+        function saveCurrentDataToHistory(dateStr) {
+            if (!db) return;
+            
+            // Get all data from the previous day
+            const transaction = db.transaction(['attendance'], 'readonly');
+            const store = transaction.objectStore('attendance');
+            const index = store.index('date');
+            const request = index.getAll(dateStr);
+            
+            request.onsuccess = () => {
+                const dayData = request.result || [];
+                
+                if (dayData.length === 0) return;
+                
+                // Save to history store
+                const historyTransaction = db.transaction(['attendanceHistory'], 'readwrite');
+                const historyStore = historyTransaction.objectStore('attendanceHistory');
+                
+                dayData.forEach(record => {
+                    // Create history record
+                    const historyRecord = {
+                        ...record,
+                        historyDate: dateStr,
+                        savedAt: new Date().toISOString()
+                    };
+                    historyStore.add(historyRecord);
+                });
+                
+                // Also save to student history
+                const studentHistoryTransaction = db.transaction(['studentHistory'], 'readwrite');
+                const studentHistoryStore = studentHistoryTransaction.objectStore('studentHistory');
+                
+                dayData.forEach(record => {
+                    const studentHistoryRecord = {
+                        barcode: record.barcode,
+                        name: record.name,
+                        class: record.class,
+                        major: record.major,
+                        date: record.date,
+                        time: record.time,
+                        status: record.status,
+                        bolosTime: record.bolosTime,
+                        operator: record.operator,
+                        timestamp: record.timestamp
+                    };
+                    studentHistoryStore.add(studentHistoryRecord);
+                });
+                
+                // Clear the old data from attendance store
+                const clearTransaction = db.transaction(['attendance'], 'readwrite');
+                const clearStore = clearTransaction.objectStore('attendance');
+                const clearIndex = clearStore.index('date');
+                const clearRequest = clearIndex.openCursor(IDBKeyRange.only(dateStr));
+                
+                clearRequest.onsuccess = (event) => {
+                    const cursor = event.target.result;
+                    if (cursor) {
+                        clearStore.delete(cursor.primaryKey);
+                        cursor.continue();
+                    }
+                };
+                
+                // Sync to Firebase if online
+                if (firebaseDB && isOnline) {
+                    syncHistoryToFirebase(dateStr, dayData);
+                }
+                
+                // Send notification about saved history
+                sendPushNotification('Riwayat Tersimpan', `Data absensi tanggal ${dateStr} telah tersimpan ke riwayat.`);
+                
+                console.log(`Saved ${dayData.length} records to history for ${dateStr}`);
+            };
+        }
+
+        function syncHistoryToFirebase(dateStr, data) {
+            if (!firebaseDB) return;
+            
+            const historyRef = firebaseDB.ref(`history/${dateStr}`);
+            const historyData = {};
+            
+            data.forEach((item, index) => {
+                const key = item.barcode + '_' + (item.timestamp || index);
+                historyData[key] = {
+                    ...item,
+                    historyDate: dateStr,
+                    savedAt: new Date().toISOString()
+                };
+            });
+            
+            historyRef.set(historyData);
+        }
+
+        // ============================================
+        // ANALYTICS DASHBOARD FUNCTIONS
+        // ============================================
+
+        function loadAnalytics() {
+            if (!db || isStudentMode) return;
+            
+            const range = parseInt(document.getElementById('analyticsRange').value);
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(endDate.getDate() - range);
+            
+            const transaction = db.transaction(['attendance', 'attendanceHistory'], 'readonly');
+            const store = transaction.objectStore('attendance');
+            const historyStore = transaction.objectStore('attendanceHistory');
+            
+            const request = store.getAll();
+            const historyRequest = historyStore.getAll();
+            
+            Promise.all([
+                new Promise((resolve) => { request.onsuccess = () => resolve(request.result || []); }),
+                new Promise((resolve) => { historyRequest.onsuccess = () => resolve(historyRequest.result || []); })
+            ]).then(([currentData, historyData]) => {
+                const allData = [...currentData, ...historyData];
+                
+                // Filter by date range
+                const filteredData = allData.filter(item => {
+                    const itemDate = new Date(item.date);
+                    return itemDate >= startDate && itemDate <= endDate;
+                });
+                
+                renderAnalyticsSummary(filteredData, range);
+                renderAttendanceTrend(filteredData, startDate, endDate, range);
+                renderStatusDistribution(filteredData);
+                renderHeatmap(filteredData);
+                renderRiskPrediction(filteredData);
+            });
+        }
+
+        function renderAnalyticsSummary(data, range) {
+            const totalRecords = data.length;
+            const uniqueStudents = new Set(data.map(item => item.barcode)).size;
+            const hadirCount = data.filter(item => item.status === 'hadir').length;
+            const avgAttendance = totalRecords > 0 ? ((hadirCount / totalRecords) * 100).toFixed(1) : 0;
+            
+            const summaryDiv = document.getElementById('analyticsSummary');
+            summaryDiv.innerHTML = `
+                <div class="analytics-summary-item">
+                    <div class="analytics-summary-value">${totalRecords}</div>
+                    <div class="analytics-summary-label">Total Records</div>
+                </div>
+                <div class="analytics-summary-item">
+                    <div class="analytics-summary-value">${uniqueStudents}</div>
+                    <div class="analytics-summary-label">Siswa Aktif</div>
+                </div>
+                <div class="analytics-summary-item">
+                    <div class="analytics-summary-value">${avgAttendance}%</div>
+                    <div class="analytics-summary-label">Rata-rata Hadir</div>
+                </div>
+                <div class="analytics-summary-item">
+                    <div class="analytics-summary-value">${range}</div>
+                    <div class="analytics-summary-label">Hari Terakhir</div>
+                </div>
+            `;
+        }
+
+        function renderAttendanceTrend(data, startDate, endDate, range) {
+            const ctx = document.getElementById('attendanceTrendChart').getContext('2d');
+            
+            // Group by date
+            const dateMap = {};
+            const currentDate = new Date(startDate);
+            
+            while (currentDate <= endDate) {
+                const dateStr = currentDate.toISOString().split('T')[0];
+                dateMap[dateStr] = { hadir: 0, bolos: 0, izin: 0, sakit: 0, total: 0 };
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            data.forEach(item => {
+                if (dateMap[item.date]) {
+                    dateMap[item.date][item.status]++;
+                    dateMap[item.date].total++;
+                }
+            });
+            
+            const labels = Object.keys(dateMap).sort();
+            const hadirData = labels.map(date => dateMap[date].hadir);
+            const bolosData = labels.map(date => dateMap[date].bolos);
+            const izinData = labels.map(date => dateMap[date].izin);
+            const sakitData = labels.map(date => dateMap[date].sakit);
+            
+            // Format labels
+            const formattedLabels = labels.map(date => {
+                const d = new Date(date);
+                return `${d.getDate()}/${d.getMonth() + 1}`;
+            });
+            
+            if (attendanceTrendChart) {
+                attendanceTrendChart.destroy();
+            }
+            
+            attendanceTrendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: formattedLabels,
+                    datasets: [
+                        {
+                            label: 'Hadir',
+                            data: hadirData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Bolos',
+                            data: bolosData,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Izin',
+                            data: izinData,
+                            borderColor: '#8b5cf6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Sakit',
+                            data: sakitData,
+                            borderColor: '#f97316',
+                            backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            stacked: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderStatusDistribution(data) {
+            const ctx = document.getElementById('statusDistributionChart').getContext('2d');
+            
+            const hadir = data.filter(item => item.status === 'hadir').length;
+            const bolos = data.filter(item => item.status === 'bolos').length;
+            const izin = data.filter(item => item.status === 'izin').length;
+            const sakit = data.filter(item => item.status === 'sakit').length;
+            
+            if (statusDistributionChart) {
+                statusDistributionChart.destroy();
+            }
+            
+            statusDistributionChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Hadir', 'Bolos', 'Izin', 'Sakit'],
+                    datasets: [{
+                        data: [hadir, bolos, izin, sakit],
+                        backgroundColor: ['#10b981', '#ef4444', '#8b5cf6', '#f97316'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderHeatmap(data) {
+            const container = document.getElementById('attendanceHeatmap');
+            
+            // Group by student and calculate attendance rate
+            const studentStats = {};
+            Object.keys(studentDatabase).forEach(barcode => {
+                studentStats[barcode] = { hadir: 0, total: 0, name: studentDatabase[barcode].name };
+            });
+            
+            data.forEach(item => {
+                if (studentStats[item.barcode]) {
+                    studentStats[item.barcode].total++;
+                    if (item.status === 'hadir') {
+                        studentStats[item.barcode].hadir++;
+                    }
+                }
+            });
+            
+            // Sort by attendance rate
+            const sortedStudents = Object.entries(studentStats)
+                .filter(([_, stats]) => stats.total > 0)
+                .sort((a, b) => {
+                    const rateA = a[1].hadir / a[1].total;
+                    const rateB = b[1].hadir / b[1].total;
+                    return rateA - rateB;
+                })
+                .slice(0, 50); // Show top 50
+            
+            container.innerHTML = sortedStudents.map(([barcode, stats]) => {
+                const rate = stats.total > 0 ? (stats.hadir / stats.total) : 0;
+                let color, textColor;
+                
+                if (rate >= 1) {
+                    color = '#10b981';
+                    textColor = 'white';
+                } else if (rate >= 0.75) {
+                    color = '#d1fae5';
+                    textColor = '#065f46';
+                } else if (rate >= 0.5) {
+                    color = '#fef3c7';
+                    textColor = '#92400e';
+                } else {
+                    color = '#fee2e2';
+                    textColor = '#991b1b';
+                }
+                
+                return `
+                    <div class="heatmap-cell" style="background: ${color}; color: ${textColor};" 
+                         title="${stats.name}: ${(rate * 100).toFixed(0)}% (${stats.hadir}/${stats.total})">
+                        ${(rate * 100).toFixed(0)}%
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderRiskPrediction(data) {
+            const container = document.getElementById('riskPredictionList');
+            
+            // Calculate risk for each student
+            const studentStats = {};
+            Object.keys(studentDatabase).forEach(barcode => {
+                studentStats[barcode] = { 
+                    hadir: 0, 
+                    bolos: 0, 
+                    izin: 0, 
+                    sakit: 0,
+                    total: 0, 
+                    name: studentDatabase[barcode].name,
+                    class: studentDatabase[barcode].class
+                };
+            });
+            
+            data.forEach(item => {
+                if (studentStats[item.barcode]) {
+                    studentStats[item.barcode].total++;
+                    studentStats[item.barcode][item.status]++;
+                }
+            });
+            
+            // Calculate risk score
+            const riskStudents = Object.entries(studentStats)
+                .filter(([_, stats]) => stats.total >= 3) // Minimum 3 records
+                .map(([barcode, stats]) => {
+                    const attendanceRate = stats.hadir / stats.total;
+                    const bolosRate = stats.bolos / stats.total;
+                    let riskLevel, riskClass;
+                    
+                    if (attendanceRate < 0.5 || bolosRate > 0.5) {
+                        riskLevel = 'High';
+                        riskClass = 'risk-high';
+                    } else if (attendanceRate < 0.75 || bolosRate > 0.25) {
+                        riskLevel = 'Medium';
+                        riskClass = 'risk-medium';
+                    } else {
+                        riskLevel = 'Low';
+                        riskClass = 'risk-low';
+                    }
+                    
+                    return {
+                        barcode,
+                        ...stats,
+                        attendanceRate,
+                        riskLevel,
+                        riskClass
+                    };
+                })
+                .filter(student => student.riskLevel !== 'Low')
+                .sort((a, b) => a.attendanceRate - b.attendanceRate);
+            
+            if (riskStudents.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="padding: 2rem;">
+                        <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                        <p>Tidak ada siswa berisiko tinggi saat ini</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = riskStudents.map(student => `
+                <div class="prediction-item">
+                    <div class="prediction-info">
+                        <span class="prediction-name">${student.name}</span>
+                        <span class="prediction-detail">
+                            Kehadiran: ${(student.attendanceRate * 100).toFixed(1)}% | 
+                            Bolos: ${student.bolos} | 
+                            Total: ${student.total} hari
+                        </span>
+                    </div>
+                    <span class="risk-indicator ${student.riskClass}">
+                        <i class="fas fa-exclamation-circle"></i>
+                        ${student.riskLevel}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        // ============================================
+        // BACKUP & RESTORE FUNCTIONS
+        // ============================================
+
+        function exportDatabase() {
+            if (!db) return;
+            
+            const password = document.getElementById('backupPassword').value;
+            const progressBar = document.getElementById('exportProgress');
+            const progressFill = document.getElementById('exportProgressFill');
+            
+            progressBar.classList.add('active');
+            progressFill.style.width = '0%';
+            
+            const transaction = db.transaction(['attendance', 'attendanceHistory', 'studentHistory'], 'readonly');
+            
+            Promise.all([
+                new Promise((resolve) => {
+                    const store = transaction.objectStore('attendance');
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result || []);
+                }),
+                new Promise((resolve) => {
+                    const store = transaction.objectStore('attendanceHistory');
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result || []);
+                }),
+                new Promise((resolve) => {
+                    const store = transaction.objectStore('studentHistory');
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result || []);
+                })
+            ]).then(([attendance, history, studentHistory]) => {
+                progressFill.style.width = '50%';
+                
+                const backupData = {
+                    version: DB_VERSION,
+                    exportedAt: new Date().toISOString(),
+                    exportedBy: currentUser ? currentUser.name : 'Unknown',
+                    attendance: attendance,
+                    attendanceHistory: history,
+                    studentHistory: studentHistory
+                };
+                
+                let dataStr = JSON.stringify(backupData, null, 2);
+                let filename = `absensi_backup_${new Date().toISOString().split('T')[0]}.json`;
+                
+                // Encrypt if password provided
+                if (password) {
+                    dataStr = encryptData(dataStr, password);
+                    filename += '.enc';
+                }
+                
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                progressFill.style.width = '100%';
+                
+                // Save to history
+                saveBackupHistory(filename, blob.size, password ? 'Encrypted' : 'Plain');
+                
+                setTimeout(() => {
+                    progressBar.classList.remove('active');
+                    showToast(`Backup berhasil: ${filename}`, 'success');
+                    document.getElementById('backupPassword').value = '';
+                }, 500);
+            });
+        }
+
+        function importDatabase() {
+            const fileInput = document.getElementById('backupFileInput');
+            const password = document.getElementById('restorePassword').value;
+            const progressBar = document.getElementById('importProgress');
+            const progressFill = document.getElementById('importProgressFill');
+            
+            if (!fileInput.files || fileInput.files.length === 0) {
+                showToast('Pilih file backup terlebih dahulu!', 'error');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            progressBar.classList.add('active');
+            progressFill.style.width = '0%';
+            
+            reader.onload = (e) => {
+                try {
+                    progressFill.style.width = '30%';
+                    
+                    let dataStr = e.target.result;
+                    
+                    // Decrypt if needed
+                    if (file.name.endsWith('.enc') || password) {
+                        if (!password) {
+                            showToast('File terenkripsi. Masukkan password!', 'error');
+                            progressBar.classList.remove('active');
+                            return;
+                        }
+                        dataStr = decryptData(dataStr, password);
+                    }
+                    
+                    const backupData = JSON.parse(dataStr);
+                    progressFill.style.width = '50%';
+                    
+                    if (!backupData.attendance || !Array.isArray(backupData.attendance)) {
+                        throw new Error('Format file tidak valid');
+                    }
+                    
+                    // Confirm before restore
+                    if (!confirm(`Restore data dari ${backupData.exportedAt}?\nIni akan menambahkan data ke database existing.`)) {
+                        progressBar.classList.remove('active');
+                        return;
+                    }
+                    
+                    // Restore data
+                    const transaction = db.transaction(['attendance', 'attendanceHistory', 'studentHistory'], 'readwrite');
+                    
+                    const attendanceStore = transaction.objectStore('attendance');
+                    const historyStore = transaction.objectStore('attendanceHistory');
+                    const studentHistoryStore = transaction.objectStore('studentHistory');
+                    
+                    let restoredCount = 0;
+                    
+                    // Restore attendance
+                    backupData.attendance.forEach(item => {
+                        attendanceStore.put(item);
+                        restoredCount++;
+                    });
+                    
+                    // Restore history
+                    if (backupData.attendanceHistory) {
+                        backupData.attendanceHistory.forEach(item => {
+                            historyStore.put(item);
+                            restoredCount++;
+                        });
+                    }
+                    
+                    // Restore student history
+                    if (backupData.studentHistory) {
+                        backupData.studentHistory.forEach(item => {
+                            studentHistoryStore.put(item);
+                            restoredCount++;
+                        });
+                    }
+                    
+                    transaction.oncomplete = () => {
+                        progressFill.style.width = '100%';
+                        setTimeout(() => {
+                            progressBar.classList.remove('active');
+                            showToast(`Restore berhasil! ${restoredCount} records dipulihkan.`, 'success');
+                            fileInput.value = '';
+                            document.getElementById('backupFileLabel').innerHTML = `
+                                <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem; display: block;"></i>
+                                <span>Klik untuk pilih file backup</span>
+                            `;
+                            document.getElementById('restorePassword').value = '';
+                            
+                            // Refresh data
+                            loadTodayData();
+                            loadBackupHistory();
+                        }, 500);
+                    };
+                    
+                } catch (error) {
+                    progressBar.classList.remove('active');
+                    showToast('Error restore: ' + error.message, 'error');
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+
+        function handleBackupFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('backupFileText').textContent = file.name;
+            }
+        }
+
+        function encryptData(text, password) {
+            // Simple XOR encryption for demo (use proper encryption in production)
+            let result = '';
+            for (let i = 0; i < text.length; i++) {
+                const charCode = text.charCodeAt(i) ^ password.charCodeAt(i % password.length);
+                result += String.fromCharCode(charCode);
+            }
+            return btoa(result);
+        }
+
+        function decryptData(encryptedText, password) {
+            try {
+                const text = atob(encryptedText);
+                let result = '';
+                for (let i = 0; i < text.length; i++) {
+                    const charCode = text.charCodeAt(i) ^ password.charCodeAt(i % password.length);
+                    result += String.fromCharCode(charCode);
+                }
+                return result;
+            } catch (e) {
+                throw new Error('Password salah atau file rusak');
+            }
+        }
+
+        function backupToLocalStorage() {
+            if (!db) return;
+            
+            const transaction = db.transaction(['attendance', 'attendanceHistory'], 'readonly');
+            
+            Promise.all([
+                new Promise((resolve) => {
+                    const store = transaction.objectStore('attendance');
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result || []);
+                }),
+                new Promise((resolve) => {
+                    const store = transaction.objectStore('attendanceHistory');
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result || []);
+                })
+            ]).then(([attendance, history]) => {
+                const backupData = {
+                    timestamp: new Date().toISOString(),
+                    attendance: attendance,
+                    history: history
+                };
+                
+                localStorage.setItem('absensi_auto_backup', JSON.stringify(backupData));
+                localStorage.setItem('absensi_last_backup', new Date().toISOString());
+                
+                document.getElementById('lastBackupDate').textContent = new Date().toLocaleString('id-ID');
+                showToast('Backup ke local storage berhasil!', 'success');
+            });
+        }
+
+        function toggleAutoBackup() {
+            const enabled = document.getElementById('autoBackupEnabled').checked;
+            localStorage.setItem('absensi_auto_backup_enabled', enabled);
+            
+            if (enabled) {
+                // Backup immediately
+                backupToLocalStorage();
+                // Set interval for daily backup
+                setInterval(() => {
+                    if (document.getElementById('autoBackupEnabled').checked) {
+                        backupToLocalStorage();
+                    }
+                }, 24 * 60 * 60 * 1000); // Every 24 hours
+                showToast('Auto backup diaktifkan', 'success');
+            } else {
+                showToast('Auto backup dimatikan', 'warning');
+            }
+        }
+
+        function saveBackupHistory(filename, size, type) {
+            let history = JSON.parse(localStorage.getItem('absensi_backup_history') || '[]');
+            history.unshift({
+                date: new Date().toISOString(),
+                filename: filename,
+                size: formatFileSize(size),
+                type: type
+            });
+            // Keep only last 10
+            history = history.slice(0, 10);
+            localStorage.setItem('absensi_backup_history', JSON.stringify(history));
+            loadBackupHistory();
+        }
+
+        function loadBackupHistory() {
+            const history = JSON.parse(localStorage.getItem('absensi_backup_history') || '[]');
+            const tbody = document.getElementById('backupHistoryBody');
+            
+            if (history.length === 0) {
+                tbody.innerHTML = `
+                    <tr class="empty-state">
+                        <td colspan="4">
+                            <i class="fas fa-inbox"></i>
+                            <p>Belum ada riwayat backup</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = history.map((item, index) => `
+                <tr>
+                    <td>${new Date(item.date).toLocaleString('id-ID')}</td>
+                    <td>${item.size}</td>
+                    <td><span class="badge ${item.type === 'Encrypted' ? 'badge-purple' : 'badge-success'}">${item.type}</span></td>
+                    <td>
+                        <button class="btn btn-danger btn-small" onclick="deleteBackupHistory(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            // Load last backup date
+            const lastBackup = localStorage.getItem('absensi_last_backup');
+            if (lastBackup) {
+                document.getElementById('lastBackupDate').textContent = new Date(lastBackup).toLocaleString('id-ID');
+            }
+            
+            // Load auto backup setting
+            const autoBackup = localStorage.getItem('absensi_auto_backup_enabled') === 'true';
+            document.getElementById('autoBackupEnabled').checked = autoBackup;
+        }
+
+        function deleteBackupHistory(index) {
+            let history = JSON.parse(localStorage.getItem('absensi_backup_history') || '[]');
+            history.splice(index, 1);
+            localStorage.setItem('absensi_backup_history', JSON.stringify(history));
+            loadBackupHistory();
+        }
+
+        function clearBackupHistory() {
+            if (confirm('Hapus semua riwayat backup?')) {
+                localStorage.removeItem('absensi_backup_history');
+                loadBackupHistory();
+                showToast('Riwayat backup dihapus', 'success');
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
 
         // ============================================
         // FIREBASE INITIALIZATION & SYNC
@@ -3413,6 +5042,11 @@
                 localStorage.removeItem('currentStudent');
                 showMainApp();
                 showToast(`Selamat datang, ${user.name}!`, 'success');
+                
+                // Request notification permission on login
+                if (Notification.permission === 'default') {
+                    requestNotificationPermission();
+                }
             } else {
                 showToast('Username atau password salah!', 'error');
             }
@@ -3485,10 +5119,26 @@
             
             request.onupgradeneeded = (event) => {
                 db = event.target.result;
+                
+                // Store for daily attendance
                 if (!db.objectStoreNames.contains('attendance')) {
                     const store = db.createObjectStore('attendance', { keyPath: 'id', autoIncrement: true });
                     store.createIndex('date', 'date', { unique: false });
                     store.createIndex('barcode', 'barcode', { unique: false });
+                }
+                
+                // Store for general history (all dates)
+                if (!db.objectStoreNames.contains('attendanceHistory')) {
+                    const historyStore = db.createObjectStore('attendanceHistory', { keyPath: 'id', autoIncrement: true });
+                    historyStore.createIndex('historyDate', 'historyDate', { unique: false });
+                    historyStore.createIndex('barcode', 'barcode', { unique: false });
+                }
+                
+                // Store for student-specific history
+                if (!db.objectStoreNames.contains('studentHistory')) {
+                    const studentHistoryStore = db.createObjectStore('studentHistory', { keyPath: 'id', autoIncrement: true });
+                    studentHistoryStore.createIndex('barcode', 'barcode', { unique: false });
+                    studentHistoryStore.createIndex('date', 'date', { unique: false });
                 }
             };
         }
@@ -3597,6 +5247,9 @@
                     addAttendance(barcode, student.name, student.class, student.major, 'hadir');
                     showToast(`Berhasil! ${student.name} telah absen`, 'success');
                     playBeep();
+                    
+                    // Send push notification
+                    sendPushNotification('Absensi Berhasil', `${student.name} telah melakukan absensi.`);
                 } else {
                     document.getElementById('modalBarcode').value = barcode;
                     openModal();
@@ -3659,6 +5312,13 @@
                 
                 if (status === 'bolos' || status === 'izin' || status === 'sakit') {
                     notifyGuru(status, name, barcode);
+                }
+                
+                // Trigger background sync if available
+                if ('serviceWorker' in navigator && 'SyncManager' in window) {
+                    navigator.serviceWorker.ready.then(registration => {
+                        registration.sync.register('sync-attendance');
+                    });
                 }
             };
         }
@@ -3997,12 +5657,19 @@
             const bulan = parseInt(document.getElementById('rekapBulan').value);
             const tahun = parseInt(document.getElementById('rekapTahun').value);
             
-            const transaction = db.transaction(['attendance'], 'readonly');
+            // Load from both current attendance and history
+            const transaction = db.transaction(['attendance', 'attendanceHistory'], 'readonly');
             const store = transaction.objectStore('attendance');
-            const request = store.getAll();
+            const historyStore = transaction.objectStore('attendanceHistory');
             
-            request.onsuccess = () => {
-                const allData = request.result || [];
+            const request = store.getAll();
+            const historyRequest = historyStore.getAll();
+            
+            Promise.all([
+                new Promise((resolve) => { request.onsuccess = () => resolve(request.result || []); }),
+                new Promise((resolve) => { historyRequest.onsuccess = () => resolve(historyRequest.result || []); })
+            ]).then(([currentData, historyData]) => {
+                const allData = [...currentData, ...historyData];
                 
                 const filteredData = allData.filter(item => {
                     const itemDate = new Date(item.date);
@@ -4011,7 +5678,7 @@
                 
                 renderRekap(filteredData, bulan, tahun);
                 renderRanking(filteredData);
-            };
+            });
         }
 
         function renderRekap(data, bulan, tahun) {
@@ -4191,12 +5858,18 @@
             const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
                               'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
             
-            const transaction = db.transaction(['attendance'], 'readonly');
+            const transaction = db.transaction(['attendance', 'attendanceHistory'], 'readonly');
             const store = transaction.objectStore('attendance');
-            const request = store.getAll();
+            const historyStore = transaction.objectStore('attendanceHistory');
             
-            request.onsuccess = () => {
-                const allData = request.result || [];
+            const request = store.getAll();
+            const historyRequest = historyStore.getAll();
+            
+            Promise.all([
+                new Promise((resolve) => { request.onsuccess = () => resolve(request.result || []); }),
+                new Promise((resolve) => { historyRequest.onsuccess = () => resolve(historyRequest.result || []); })
+            ]).then(([currentData, historyData]) => {
+                const allData = [...currentData, ...historyData];
                 const filteredData = allData.filter(item => {
                     const itemDate = new Date(item.date);
                     return itemDate.getMonth() === bulan && itemDate.getFullYear() === tahun;
@@ -4243,7 +5916,7 @@
                 XLSX.writeFile(wb, filename);
                 
                 showToast(`File ${filename} berhasil diunduh!`, 'success');
-            };
+            });
         }
 
         function searchRiwayat() {
@@ -4279,16 +5952,25 @@
         function loadRiwayatSiswa(barcode, studentData) {
             if (!db) return;
             
-            const transaction = db.transaction(['attendance'], 'readonly');
+            // Load from both current attendance and student history
+            const transaction = db.transaction(['attendance', 'studentHistory'], 'readonly');
             const store = transaction.objectStore('attendance');
-            const index = store.index('barcode');
-            const request = index.getAll(barcode);
+            const historyStore = transaction.objectStore('studentHistory');
             
-            request.onsuccess = () => {
-                const data = request.result || [];
-                data.sort((a, b) => new Date(b.date) - new Date(a.date));
-                renderRiwayat(barcode, studentData, data);
-            };
+            const index = store.index('barcode');
+            const historyIndex = historyStore.index('barcode');
+            
+            const request = index.getAll(barcode);
+            const historyRequest = historyIndex.getAll(barcode);
+            
+            Promise.all([
+                new Promise((resolve) => { request.onsuccess = () => resolve(request.result || []); }),
+                new Promise((resolve) => { historyRequest.onsuccess = () => resolve(historyRequest.result || []); })
+            ]).then(([currentData, historyData]) => {
+                const allData = [...currentData, ...historyData];
+                allData.sort((a, b) => new Date(b.date) - new Date(a.date));
+                renderRiwayat(barcode, studentData, allData);
+            });
         }
 
         function renderRiwayat(barcode, studentData, data) {
@@ -4394,24 +6076,33 @@
                 return;
             }
             
-            const transaction = db.transaction(['attendance'], 'readonly');
+            // Load from both current attendance and student history
+            const transaction = db.transaction(['attendance', 'studentHistory'], 'readonly');
             const store = transaction.objectStore('attendance');
-            const index = store.index('barcode');
-            const request = index.getAll(currentStudentBarcode);
+            const historyStore = transaction.objectStore('studentHistory');
             
-            request.onsuccess = () => {
-                const data = request.result || [];
-                data.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const index = store.index('barcode');
+            const historyIndex = historyStore.index('barcode');
+            
+            const request = index.getAll(currentStudentBarcode);
+            const historyRequest = historyIndex.getAll(currentStudentBarcode);
+            
+            Promise.all([
+                new Promise((resolve) => { request.onsuccess = () => resolve(request.result || []); }),
+                new Promise((resolve) => { historyRequest.onsuccess = () => resolve(historyRequest.result || []); })
+            ]).then(([currentData, historyData]) => {
+                const allData = [...currentData, ...historyData];
+                allData.sort((a, b) => new Date(b.date) - new Date(a.date));
                 
-                const hadir = data.filter(item => item.status === 'hadir').length;
-                const izin = data.filter(item => item.status === 'izin').length;
-                const sakit = data.filter(item => item.status === 'sakit').length;
-                const bolos = data.filter(item => item.status === 'bolos').length;
-                const total = data.length;
+                const hadir = allData.filter(item => item.status === 'hadir').length;
+                const izin = allData.filter(item => item.status === 'izin').length;
+                const sakit = allData.filter(item => item.status === 'sakit').length;
+                const bolos = allData.filter(item => item.status === 'bolos').length;
+                const total = allData.length;
                 const percentage = total > 0 ? ((hadir / total) * 100).toFixed(1) : 0;
                 
                 const now = new Date();
-                const calendarHTML = generateCalendar(data, now.getMonth(), now.getFullYear());
+                const calendarHTML = generateCalendar(allData, now.getMonth(), now.getFullYear());
                 
                 container.innerHTML = `
                     <div class="riwayat-result">
@@ -4458,7 +6149,7 @@
                         
                         <div>
                             <h4 style="margin-bottom: 1rem; color: var(--primary-dark);">
-                                <i class="fas fa-list"></i> Riwayat Lengkap (${data.length} records)
+                                <i class="fas fa-list"></i> Riwayat Lengkap (${allData.length} records)
                             </h4>
                             <div class="table-container">
                                 <table>
@@ -4471,14 +6162,14 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        ${data.length === 0 ? `
+                                        ${allData.length === 0 ? `
                                             <tr class="empty-state">
                                                 <td colspan="4">
                                                     <i class="fas fa-inbox"></i>
                                                     <p>Belum ada data absensi</p>
                                                 </td>
                                             </tr>
-                                        ` : data.map(item => `
+                                        ` : allData.map(item => `
                                             <tr>
                                                 <td>${formatDate(item.date)}</td>
                                                 <td>${getStatusBadge(item.status)}</td>
@@ -4492,11 +6183,9 @@
                         </div>
                     </div>
                 `;
-            };
-            
-            request.onerror = () => {
+            }).catch(() => {
                 container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Gagal memuat data</p></div>';
-            };
+            });
         }
 
         function generateCalendar(data, month, year) {
@@ -4913,6 +6602,10 @@
                 loadRekapBulanan();
             } else if (tabName === 'studentRiwayat') {
                 loadStudentOwnRiwayat();
+            } else if (tabName === 'analytics') {
+                loadAnalytics();
+            } else if (tabName === 'backup') {
+                loadBackupHistory();
             }
         }
 
